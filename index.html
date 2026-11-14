@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Industry Insights — dHealth Intelligence</title>
+  <meta name="theme-color" content="#16283A">
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link href="/assets/base.min.css" rel="stylesheet">
+  <script defer src="/assets/alpinejs.min.js"></script>
+  <script src="/assets/logger.js"></script>
+  <script defer src="/assets/marked.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body x-data="insightsUI()">
+  <header>
+    <svg class="logo" viewBox="0 0 64 64" aria-label="dHealth Prevention">
+      <rect width="64" height="64" rx="12" fill="#FFFFFF"/>
+      <circle cx="32" cy="9" r="3.4" fill="#B07D1E"/>
+      <path d="M32 14v6" stroke="#2C6BA0" stroke-width="2.6" stroke-linecap="round"/>
+      <rect x="11" y="20" width="42" height="32" rx="9" fill="#16283A"/>
+      <circle cx="23" cy="33" r="5" fill="#E8EDF2"/><circle cx="41" cy="33" r="5" fill="#E8EDF2"/>
+      <circle cx="24.6" cy="31.4" r="1.6" fill="#16283A"/><circle cx="42.6" cy="31.4" r="1.6" fill="#16283A"/>
+      <path d="M22 43.5q10 5.5 20 0" fill="none" stroke="#2C6BA0" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <h1>dHealth Intelligence</h1>
+      <div class="sub">DAILY INDUSTRY INSIGHTS</div>
+    </div>
+    <span class="date" id="today"></span>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <span class="tagline">// community-ranked bulletins &mdash; cast your vote</span>
+      <button class="btn active" id="sort-hot" onclick="setSort('hot')">HOT</button>
+      <button class="btn" id="sort-new" onclick="setSort('new')">NEW</button>
+      <button class="btn" id="sort-top" onclick="setSort('top')">TOP</button>
+      <button class="btn" onclick="resetVotes()">RESET MY VOTES</button>
+    </div>
+    <div id="feed" class="min-h-screen">
+      <template x-for="bulletin in latestBulletins" :key="bulletin.id">
+        <article class="bulletin">
+          <div class="vote">
+            <button
+              class="up"
+              :class="{
+                'active': knownUserVotes[bulletin.id] === 1
+              }"
+              x-click="registerVote(bulletin.id, 1)"
+              aria-label="Upvote">&#9650;</button>
+            <span class="score" x-text="(bulletin.upvotes - bulletin.downvotes)"></span>
+            <button
+              class="down"
+              :class="{
+                'active': knownUserVotes[bulletin.id] === -1
+              }"
+              x-click="registerVote(bulletin.id, -1)"
+              aria-label="Downvote">&#9660;</button>
+          </div>
+          <div>
+            <h2 x-text="bulletin.title"></h2>
+            <p x-text="bulletin.excerpt"></p>
+            <div class="meta">
+              <template x-for="tag in bulletin.tags" :key="tag">
+                <span class="chip" x-text="tag"></span>
+              </template>
+              <span class="src">sources: <em x-text="bulletin.sources"></em></span>
+            </div>
+          </div>
+        </article>
+      </template>
+    </div>
+
+    <div x-show="showLicense" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" @click.self="showLicense = false">
+      <div class="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+          <h2 class="text-2xl font-bold">dHealth Insights License</h2>
+          <button
+            @click="showLicense = false"
+            class="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+        </div>
+        <div class="p-6 prose prose-sm max-w-none" x-html="licenseMarkdown"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="mx-auto px-6 py-5">
+      <div class="flex flex-col gap-3 sm:flex-row items-center sm:items-start sm:justify-between">
+        <p class="text-xs sm:text-sm text-slate-500">
+          <em x-text="appVersion"></em> • <a class="hover:underline hover:opacity-80 transition-opacity" href="#" @click="openLicense()">LICENSE</a>
+        </p>
+        <p class="text-xs sm:text-sm text-center font-medium text-slate-600">
+          © <span x-text="copyYear"></span> <a href="https://evi.as" target="_blank" rel="noopener" class="text-blue-600 hover:text-blue-700">Grégory Saive</a> for <a href="https://resoftware.es" target="_blank" rel="noopener" class="text-blue-600 hover:text-blue-700">re:Software S.L.</a>,<br />All rights reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function insightsUI() {
+      const log = window.createLogger("ui/main");
+      return {
+        // Config
+        STORAGE_KEY: 'aidh_insights_prev_votes_v1',
+        PROFILE_KEY: 'aidh_insights_uid',
+
+        // Data
+        appVersion: '@main/dev',
+        copyYear: '2026',
+        licenseMarkdown: '',
+        latestBulletins: [],
+        knownUserVotes: {},
+        insightsUserID: '',
+
+        // State
+        loadingInfo: false,
+        showLicense: false,
+        countBulletinsPerPage: 21,
+        currentBulletinsPage: 1,
+        countBulletinsPages: 1,
+        totalLatestBulletins: 0,
+        bulletinsPageNumbers: [1],
+
+        // UI Helpers
+
+        async init() {
+          this.loadSystemInfo();
+          this.loadLatestBulletins(1);
+
+          this.insightsUserID = localStorage.getItem(this.PROFILE_KEY)||this.getRandomUserID();
+          localStorage.setItem(this.PROFILE_KEY, this.insightsUserID);
+
+          this.knownUserVotes = JSON.parse(localStorage.getItem(this.STORAGE_KEY)||'{}'); // {id: 1|-1}
+        },
+
+        paginate(p) {
+          if (p < 1 || p > this.countBulletinsPages) {
+            return false;
+          }
+
+          this.loadLatestBulletins(p);
+        },
+
+        getRandomUserID() {
+          const array = new Uint8Array(4);
+          crypto.getRandomValues(array);
+          return array.toHex();
+        },
+
+        // API Helpers
+
+        async loadSystemInfo() {
+          // Fill "Today"
+          document.getElementById('today').textContent=
+            new Date().toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
+
+          const log = window.createLogger('core/system');
+          this.loading = true;
+          try {
+            const res = await fetch(`/api/v1/system/info`);
+            const data = await res.json();
+            this.appVersion = data.appVersion;
+          } catch (err) {
+            log.error('Error loading system information', { err });
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async openLicense() {
+          const response = await fetch('/api/v1/system/license');
+          const data = await response.json();
+
+          const markdown = data.license
+
+          if (typeof marked === 'undefined') {
+            throw new Error('marked.js library not loaded');
+          }
+
+          // Parse markdown to HTML using marked
+          this.licenseMarkdown = marked.parse(markdown);
+          this.showLicense = true;
+        },
+
+        async loadLatestBulletins(p) {
+          try {
+            let params = '';
+            if (p) {
+              params = params + '?page=' + p;
+            }
+            const response = await fetch('/api/v1/bulletins/list' + params);
+            if (response.ok) {
+              const data = await response.json();
+              this.latestBulletins = data.bulletins;
+              this.currentBulletinsPage = data.page;
+              this.countBulletinsPages = parseInt(data.total / this.countBulletinsPerPage)+1;
+              this.totalLatestBulletins = data.total;
+
+              for (let i = 0; i < this.countBulletinsPages; i++) {
+                this.bulletinsPageNumbers[i] = i+1;
+              }
+            }
+          } catch (error) {
+            log.error('Error loading bulletins', { error: error.message });
+          }
+        },
+
+        async registerVote(bulletinID, value) {
+          if (value !== 1 && value !== -1) {
+            return ;
+          }
+
+          this.knownUserVotes[id] = value;
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.knownUserVotes));
+
+          try {
+            const response = await fetch('/api/v1/bulletins/vote', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                bulletinID: bulletinID,
+                userID: this.insightsUserID,
+                voteValue: value,
+              }),
+            });
+
+            if (!response.ok) {
+              const error = response.json();
+              throw new Error(error.error);
+            }
+          } catch (error) {
+            log.error('Error creating invoice', { error: error.message });
+            this.formError = error.message || 'Failed to create invoice';
+          }
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
