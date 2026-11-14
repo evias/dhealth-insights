@@ -1,0 +1,7 @@
+node_modules/
+coverage/
+insights.db
+insights.test.db
+.env
+application.log
+application.log.*

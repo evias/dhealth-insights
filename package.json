@@ -1,0 +1,28 @@
+{
+  "name": "dhealth-insights",
+  "version": "0.1.0",
+  "description": "dHealth Insights - A bulletin board Powered by dHealth Intelligence",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js --watch",
+    "build": "npx @tailwindcss/cli -i ./assets/base.css -o ./assets/base.min.css",
+    "watch": "npx @tailwindcss/cli -i ./assets/base.css -o ./assets/base.min.css --watch",
+    "db:init": "node scripts/db-init.js",
+    "db:seed": "node scripts/db-seed.js",
+    "db:migrate": "node scripts/db-migrate.js",
+    "db:fresh": "npm run db:init && npm run db:seed && npm run db:migrate",
+    "db:reset": "node scripts/db-reset.js -- $SCS_DB_TABLE",
+    "db:query": "node scripts/db-query.js -- $SCS_DB_QUERY"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.10.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.22.2",
+    "winston": "^3.14.0",
+    "winston-daily-rotate-file": "^4.7.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0"
+  }
+}
