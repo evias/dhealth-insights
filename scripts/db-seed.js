@@ -113,6 +113,55 @@ try {
         "https://thehealthcareblog.com",
       ]),
       tags: "health policy, CMS, Medicare, No Surprises Act, healthcare regulation, health AI, prior authorization, UnitedHealth Group, hospital consolidation, weekly insights"
+    },
+    {
+      id: "aidh_gva_gemini38flash_20261115",
+      title: "Medicaid Grace Periods, CommonSpirit's $544M Loss, and AI's Clinical Push: Healthcare Weekly Roundup",
+      slug: "medicaid-grace-periods-commonspirits-544m-loss-and-ais-clinical-push-healthcare-weekly-roundup",
+      excerpt: ""
+        + "CMS extends its home health moratorium, states get Medicaid work-requirement relief, "
+        + "CommonSpirit posts a $544M loss, and Google's Gemini enters clinical workflows — this week in healthcare.",
+      content: ""
+        + "The healthcare sector is navigating substantial regulatory updates, administrative "
+        + "enforcement delays, and ongoing scrutiny over payer practices. Notably, the Centers "
+        + "for Medicare & Medicaid Services (CMS) has extended its enrollment moratorium preventing "
+        + "new home health agencies and hospice facilities from entering the Medicare program for an "
+        + "additional six months amid fraud concerns. In parallel, the Trump administration announced "
+        + "an optional six-month grace period through June 30, 2027, for states implementing new "
+        + "Medicaid work requirements, giving agencies time to upgrade eligibility infrastructure "
+        + "without immediately terminating noncompliant beneficiaries. Concurrently, CMS and the Office "
+        + "of the National Coordinator for Health Information Technology (ONC) launched a voluntary "
+        + "testing initiative to help payers and providers pilot electronic prior authorization processes "
+        + "ahead of federal deadlines, while congressional leaders prepare bipartisan legislation to "
+        + "address cost and arbitration issues within the No Surprises Act's independent dispute "
+        + "resolution framework.\n\n"
+        + "On the financial and operational front, health systems and payers face persistent margin "
+        + "pressure alongside selective consolidation. CommonSpirit Health reported a $544 million "
+        + "operating loss to open its fiscal year 2027, attributing the shortfall to rising "
+        + "operational costs and unfavorable payer mix despite solid patient volumes. Strategic "
+        + "transactions remain active, with Ardent Health agreeing to acquire Missouri nonprofit "
+        + "Boone Health for $47 million along with a $200 million capital commitment, and St. Luke's "
+        + "signing a letter of intent to merge with BJC Health. In payer developments, UnitedHealth "
+        + "Group published an independent audit examining its medical policy development "
+        + "procedures—part of an ongoing turnaround effort—though the review stopped short of "
+        + "assessing how criteria are applied in care denial decisions.\n\n"
+        + "Technological adoption, particularly artificial intelligence, continues to expand "
+        + "across clinical and operational workflows. New survey data indicates physicians are "
+        + "increasingly leveraging AI for diagnostic support and literature reviews despite "
+        + "lingering accuracy concerns, while Gallup polling highlights that patient acceptance "
+        + "of clinical AI relies heavily on provider oversight. Major technology players and "
+        + "investors are responding aggressively: Google Cloud rolled out a dedicated healthcare "
+        + "agentic AI platform powered by Gemini, Dyania Health partnered with Nvidia to execute "
+        + "on-premise clinical reasoning inside hospital networks, Zus Health secured $33 million "
+        + "to develop AI data infrastructure, and smart ring maker Oura announced a $625 million "
+        + "deal to acquire Counsel Health.",
+      model: "gva/gemini-3.8-flash",
+      sources: JSON.stringify([
+        "https://www.healthcaredive.com",
+        "https://www.fiercehealthcare.com",
+        "https://thehealthcareblog.com",
+      ]),
+      tags: "health policy, CMS, Medicaid, healthcare AI, health system finances, hospital M&A, No Surprises Act, prior authorization, UnitedHealth Group, weekly roundup"
     }
   ];
 
