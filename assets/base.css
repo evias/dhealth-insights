@@ -68,6 +68,9 @@ button.btn.active{background:var(--steel);border-color:var(--steel);color:#fff}
 .chip.ok{background:var(--ok-tint);color:var(--ok)}
 .src{font-family:var(--mono);font-size:.68rem;color:var(--lock);margin-left:auto}
 
+.meta a:link, .meta a:focus, .meta a:visited {font-family:var(--mono);font-size:.68rem;color:var(--lock)}
+.meta a:hover, .meta a:active {font-family:var(--mono);font-size:.68rem;color:var(--lock); opacity: 0.8;}
+
 /* ===== Footer ===== */
 footer{
   background:var(--ink);

@@ -67,6 +67,8 @@
               <div class="ml-2">
                 <button
                   type="button"
+                  title="Read more"
+                  class="hover:cursor-pointer"
                   x-show="!shownBulletins[bulletin.id]"
                   @click="shownBulletins[bulletin.id] = true">
                   <!-- chevron-double-down -->
@@ -79,6 +81,8 @@
                 </button>
                 <button
                   type="button"
+                  title="Hide bulletin"
+                  class="hover:cursor-pointer"
                   x-show="shownBulletins[bulletin.id]"
                   @click="shownBulletins[bulletin.id] = false">
                   <!-- chevron-double-up -->
@@ -92,7 +96,8 @@
                 </button>
               </div>
             </div>
-            <div x-text="bulletin.content"
+            <div x-html="getBulletinHTML(bulletin)"
+                class="text-sm py-2 text-justify"
                 :class="{
                   'hidden': !shownBulletins[bulletin.id]
                 }"></div>
@@ -101,7 +106,17 @@
                 <span
                   class="chip" x-text="tag"></span>
               </template>
-              <span class="src">sources: <em x-text="bulletin.sources"></em></span>
+            </div>
+            <div class="meta">
+              <span class="src">sources: </span>
+              <ul class="flex flex-row gap-2">
+                <template x-for="(src, i) in getSources(bulletin)" :key="src">
+                  <li class="src">
+                    <a :href="src" target="_blank" x-text="getSourceName(src)"></a>
+                    <span x-show="i+1 < getSources(bulletin).length"> • </span>
+                  </li>
+                </template>
+              </ul>
             </div>
           </div>
         </article>
@@ -185,6 +200,19 @@
           const array = new Uint8Array(4);
           crypto.getRandomValues(array);
           return array.toHex();
+        },
+
+        getBulletinHTML(bulletin) {
+          return bulletin.content.replace('\n', '<br />');
+        },
+
+        getSources(bulletin) {
+          let srcs = JSON.parse(bulletin.sources);
+          return srcs;
+        },
+
+        getSourceName(sourceUrl) {
+          return sourceUrl.replace(/https?\:\/\/(www\.)*/, '');
         },
 
         // API Helpers
