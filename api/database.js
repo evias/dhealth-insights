@@ -110,7 +110,7 @@ const insightsDb = {
       (voteValue == -1 ? 1 : 0),
       bulletinID);
 
-    return insightsDb.getBulletinByID(id);
+    return insightsDb.getBulletinByID(bulletinID);
   },
 
   // Get bulletins by ID
@@ -129,8 +129,26 @@ const insightsDb = {
 
   // Get all bulletins with pagination
   getAllBulletins(limit = 10, offset = 0) {
-    const stmt = db.prepare('SELECT * FROM bulletins ORDER BY created_at DESC LIMIT ? OFFSET ?');
+    const stmt = db.prepare(`
+      SELECT
+        bulletins.*,
+        COALESCE(GROUP_CONCAT(t.name, ','), '') AS tags
+      FROM bulletins
+      LEFT JOIN bulletin_tags bt_rel ON (
+        bt_rel.bulletin_id = bulletins.id
+      )
+      LEFT JOIN tags t ON (
+        t.id = bt_rel.tag_id
+      )
+      GROUP BY bulletins.id
+      ORDER BY created_at DESC
+      LIMIT ?
+      OFFSET ?
+    `);
     const rows = stmt.all(limit, offset);
+
+    for (let i = 0; i < rows.length; i++)
+
     return rows;
   },
 

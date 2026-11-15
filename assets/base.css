@@ -21,10 +21,14 @@
   --mono:'IBM Plex Mono',ui-monospace,monospace;
   --sans:'IBM Plex Sans',-apple-system,sans-serif;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100vh;
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
   background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
-  background-size:32px 32px;}
+  background-size:32px 32px;
+}
 
 /* ===== Header ===== */
 header{background:var(--ink);color:#fff;padding:1rem 2rem;display:flex;align-items:center;gap:1rem;
@@ -65,8 +69,16 @@ button.btn.active{background:var(--steel);border-color:var(--steel);color:#fff}
 .src{font-family:var(--mono);font-size:.68rem;color:var(--lock);margin-left:auto}
 
 /* ===== Footer ===== */
-footer{background:var(--ink);color:var(--line-strong);text-align:center;padding:1.4rem;
-  font-family:var(--mono);font-size:.72rem;letter-spacing:.05em}
+footer{
+  background:var(--ink);
+  color:var(--line-strong);
+  text-align:center;
+  padding:1.4rem;
+  font-family:var(--sans);
+  font-size:.72rem;
+  letter-spacing:.05em
+}
+footer span, footer em {color:var(--line-strong)}
 footer b{color:var(--prem-tint)}
 footer a:link, footer a:focus, footer a:visited {color:var(--prem-tint)}
 footer a:hover, footer a:active {color:var(--prem-tint); opacity: 0.8;}

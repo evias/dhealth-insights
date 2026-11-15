@@ -49,23 +49,57 @@
               :class="{
                 'active': knownUserVotes[bulletin.id] === 1
               }"
-              x-click="registerVote(bulletin.id, 1)"
+              @click="registerVote(bulletin.id, 1)"
               aria-label="Upvote">&#9650;</button>
-            <span class="score" x-text="(bulletin.upvotes - bulletin.downvotes)"></span>
+            <span class="score" x-text="bulletinsScores[bulletin.id]"></span>
             <button
               class="down"
               :class="{
                 'active': knownUserVotes[bulletin.id] === -1
               }"
-              x-click="registerVote(bulletin.id, -1)"
+              @click="registerVote(bulletin.id, -1)"
               aria-label="Downvote">&#9660;</button>
           </div>
-          <div>
+          <div class="w-full flex flex-col">
             <h2 x-text="bulletin.title"></h2>
-            <p x-text="bulletin.excerpt"></p>
+            <div class="flex flex-row items-center">
+              <p x-text="bulletin.excerpt"></p>
+              <div class="ml-2">
+                <button
+                  type="button"
+                  x-show="!shownBulletins[bulletin.id]"
+                  @click="shownBulletins[bulletin.id] = true">
+                  <!-- chevron-double-down -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke-width="1.5" stroke="currentColor"
+                    class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  x-show="shownBulletins[bulletin.id]"
+                  @click="shownBulletins[bulletin.id] = false">
+                  <!-- chevron-double-up -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke-width="1.5" stroke="currentColor"
+                    class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div x-text="bulletin.content"
+                :class="{
+                  'hidden': !shownBulletins[bulletin.id]
+                }"></div>
             <div class="meta">
-              <template x-for="tag in bulletin.tags" :key="tag">
-                <span class="chip" x-text="tag"></span>
+              <template x-for="tag in bulletin.tags.split(',')" :key="tag">
+                <span
+                  class="chip" x-text="tag"></span>
               </template>
               <span class="src">sources: <em x-text="bulletin.sources"></em></span>
             </div>
@@ -90,11 +124,11 @@
   <footer>
     <div class="mx-auto px-6 py-5">
       <div class="flex flex-col gap-3 sm:flex-row items-center sm:items-start sm:justify-between">
-        <p class="text-xs sm:text-sm text-slate-500">
-          <em x-text="appVersion"></em> • <a class="hover:underline hover:opacity-80 transition-opacity" href="#" @click="openLicense()">LICENSE</a>
+        <p class="text-xs text-slate-500">
+          <span>Powered by </span><a href="https://dhealth.com" target="_blank" rel="noopener" class="text-blue-600 hover:text-blue-700"><b>dHealth Intelligence</b></a> • <em x-text="appVersion"></em> • <a class="hover:underline hover:opacity-80 transition-opacity" href="#" @click="openLicense()">LICENSE</a>
         </p>
-        <p class="text-xs sm:text-sm text-center font-medium text-slate-600">
-          © <span x-text="copyYear"></span> <a href="https://evi.as" target="_blank" rel="noopener" class="text-blue-600 hover:text-blue-700">Grégory Saive</a> for <a href="https://resoftware.es" target="_blank" rel="noopener" class="text-blue-600 hover:text-blue-700">re:Software S.L.</a>,<br />All rights reserved.
+        <p class="text-xs text-center font-medium text-slate-600">
+          © <span x-text="copyYear"></span> <a href="https://evi.as" target="_blank" rel="noopener" class="text-blue-600 hover:text-blue-700">Grégory Saive</a><span> for </span><a href="https://resoftware.es" target="_blank" rel="noopener" class="text-blue-600 hover:text-blue-700">re:Software S.L.</a><span>, All rights reserved.</span>
         </p>
       </div>
     </div>
@@ -113,6 +147,7 @@
         copyYear: '2026',
         licenseMarkdown: '',
         latestBulletins: [],
+        bulletinsScores: {},
         knownUserVotes: {},
         insightsUserID: '',
 
@@ -124,6 +159,7 @@
         countBulletinsPages: 1,
         totalLatestBulletins: 0,
         bulletinsPageNumbers: [1],
+        shownBulletins: {},
 
         // UI Helpers
 
@@ -203,6 +239,11 @@
               for (let i = 0; i < this.countBulletinsPages; i++) {
                 this.bulletinsPageNumbers[i] = i+1;
               }
+
+              for (let j = 0; j < this.latestBulletins.length; j++) {
+                const bid = this.latestBulletins[j].id;
+                this.bulletinsScores[bid] = this.latestBulletins[j].upvotes - this.latestBulletins[j].downvotes;
+              }
             }
           } catch (error) {
             log.error('Error loading bulletins', { error: error.message });
@@ -214,7 +255,7 @@
             return ;
           }
 
-          this.knownUserVotes[id] = value;
+          this.knownUserVotes[bulletinID] = value;
           localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.knownUserVotes));
 
           try {
@@ -229,12 +270,15 @@
             });
 
             if (!response.ok) {
-              const error = response.json();
+              const error = await response.json();
               throw new Error(error.error);
             }
+
+            const data = await response.json();
+            this.bulletinsScores[bulletinID] = data.score || 0;
           } catch (error) {
-            log.error('Error creating invoice', { error: error.message });
-            this.formError = error.message || 'Failed to create invoice';
+            log.error('Error registering vote', { error: error.message });
+            this.formError = error.message || 'Failed to register vote';
           }
         }
       }

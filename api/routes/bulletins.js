@@ -76,6 +76,31 @@ router.get('/list', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/v1/bulletins/vote:
+ *   post:
+ *     tags:
+ *       - Bulletins
+ *     summary: Register upvote/downvote for a bulletin.
+ *     description: Registers a vote for a bulletin.
+ *     responses:
+ *       200:
+ *         description: Vote registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 score:
+ *                   type: number
+ *       400:
+ *         $ref: '#/components/schemas/Error'
+ *       500:
+ *         $ref: '#/components/schemas/Error'
+ */
 router.post('/vote', async (req, res) => {
   try {
     const { bulletinID, userID, voteValue } = req.body;
@@ -83,11 +108,15 @@ router.post('/vote', async (req, res) => {
       return res.status(400).json({ error: 'Invalid Request' });
     }
 
-    insightsDb.registerVote({
+    const bulletin = insightsDb.registerVote({
       bulletinID, userID, voteValue
     });
 
-    return res.status(200);
+    score = bulletin.upvotes - bulletin.downvotes;
+    return res.status(200).json({
+      success: true,
+      score: score,
+    });
   } catch (error) {
     log.error('Error registering vote:', { error: error });
     res.status(500).json({ error: 'Failed to register vote' });
