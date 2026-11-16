@@ -62,7 +62,8 @@ try {
         "https://www.fiercehealthcare.com",
         "https://thehealthcareblog.com",
       ]),
-      tags: "healthcare AI, AI in healthcare, healthcare M&A, health tech, Google Cloud, Gemini for healthcare, AWS, Oura, digital health, hospital mergers"
+      tags: "healthcare AI, AI in healthcare, healthcare M&A, health tech, Google Cloud, Gemini for healthcare, AWS, Oura, digital health, hospital mergers",
+      trending: 0,
     },
     {
       id: "aidh_gva_gemini38flash_20261113",
@@ -112,7 +113,8 @@ try {
         "https://www.fiercehealthcare.com",
         "https://thehealthcareblog.com",
       ]),
-      tags: "health policy, CMS, Medicare, No Surprises Act, healthcare regulation, health AI, prior authorization, UnitedHealth Group, hospital consolidation, weekly insights"
+      tags: "health policy, CMS, Medicare, No Surprises Act, healthcare regulation, health AI, prior authorization, UnitedHealth Group, hospital consolidation, weekly insights",
+      trending: 0,
     },
     {
       id: "aidh_gva_gemini38flash_20261115",
@@ -161,7 +163,8 @@ try {
         "https://www.fiercehealthcare.com",
         "https://thehealthcareblog.com",
       ]),
-      tags: "health policy, CMS, Medicaid, healthcare AI, health system finances, hospital M&A, No Surprises Act, prior authorization, UnitedHealth Group, weekly roundup"
+      tags: "health policy, CMS, Medicaid, healthcare AI, health system finances, hospital M&A, No Surprises Act, prior authorization, UnitedHealth Group, weekly roundup",
+      trending: 1,
     }
   ];
 

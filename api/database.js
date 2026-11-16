@@ -38,6 +38,7 @@ const insightsDb = {
     slug,
     excerpt,
     content,
+    trending, // 1|0
     sources, // JSON: ['https://...', ...]
     model, // "gemini-3.8-flash", etc.
     tags, // "AI, research, insights"
@@ -48,12 +49,12 @@ const insightsDb = {
     // save bulletin details
     const stmt = db.prepare(`
       INSERT INTO bulletins (
-        id, title, slug, excerpt, content, model, sources, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        id, title, slug, excerpt, content, model, sources, trending, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     stmt.run(
-      id, title, slug, excerpt, content, model, sources,
+      id, title, slug, excerpt, content, model, sources, trending,
       now, now
     );
   
@@ -128,10 +129,24 @@ const insightsDb = {
   },
 
   // Get all bulletins with pagination
-  getAllBulletins(limit = 10, offset = 0) {
+  getAllBulletins(sortBy, limit = 10, offset = 0) {
+    let sort;
+    switch(sortBy) {
+    case 'new':
+      sort = `created_at DESC`;
+      break;
+    case 'top':
+      sort = `score DESC`;
+      break;
+    default:
+    case 'hot':
+      sort = `trending DESC, score DESC`;
+    }
+
     const stmt = db.prepare(`
       SELECT
         bulletins.*,
+        (bulletins.upvotes - bulletins.downvotes) AS score,
         COALESCE(GROUP_CONCAT(t.name, ','), '') AS tags
       FROM bulletins
       LEFT JOIN bulletin_tags bt_rel ON (
@@ -141,14 +156,11 @@ const insightsDb = {
         t.id = bt_rel.tag_id
       )
       GROUP BY bulletins.id
-      ORDER BY created_at DESC
+      ORDER BY ${sort}
       LIMIT ?
       OFFSET ?
     `);
     const rows = stmt.all(limit, offset);
-
-    for (let i = 0; i < rows.length; i++)
-
     return rows;
   },
 

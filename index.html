@@ -29,19 +29,22 @@
       <h1>dHealth Intelligence</h1>
       <div class="sub">DAILY INDUSTRY INSIGHTS</div>
     </div>
-    <span class="date" id="today"></span>
+    <div class="date">
+      <span class="date" id="today"></span><span> • </span>
+      <span class="date" x-text="'User: ' + insightsUserID"></span>
+    </div>
   </header>
 
   <main>
     <div class="toolbar">
       <span class="tagline">// community-ranked bulletins &mdash; cast your vote</span>
-      <button class="btn active" id="sort-hot" onclick="setSort('hot')">HOT</button>
-      <button class="btn" id="sort-new" onclick="setSort('new')">NEW</button>
-      <button class="btn" id="sort-top" onclick="setSort('top')">TOP</button>
-      <button class="btn" onclick="resetVotes()">RESET MY VOTES</button>
+      <button class="btn" :class="{'active': sortedBy === 'hot'}" @click="sortBy('hot')">HOT</button>
+      <button class="btn" :class="{'active': sortedBy === 'new'}" @click="sortBy('new')">NEW</button>
+      <button class="btn" :class="{'active': sortedBy === 'top'}" @click="sortBy('top')">TOP</button>
+      <button class="btn" @click="resetVotes()">RESET MY VOTES</button>
     </div>
     <div id="feed" class="min-h-screen">
-      <template x-for="bulletin in latestBulletins" :key="bulletin.id">
+      <template x-for="bulletin in sortedBulletins" :key="bulletin.id">
         <article class="bulletin">
           <div class="vote">
             <button
@@ -165,6 +168,7 @@
         bulletinsScores: {},
         knownUserVotes: {},
         insightsUserID: '',
+        sortedBy: 'hot',
 
         // State
         loadingInfo: false,
@@ -175,6 +179,7 @@
         totalLatestBulletins: 0,
         bulletinsPageNumbers: [1],
         shownBulletins: {},
+        loadingBulletins: false,
 
         // UI Helpers
 
@@ -215,6 +220,22 @@
           return sourceUrl.replace(/https?\:\/\/(www\.)*/, '');
         },
 
+        resetVotes() {
+          this.knownUserVotes = {};
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.knownUserVotes));
+        },
+
+        async sortBy(by) {
+          if (! ['hot', 'new', 'top'].includes(by)) by = 'hot';
+
+          this.sortedBy = by;
+          await this.loadLatestBulletins(this.currentBulletinsPage, by);
+        },
+
+        get sortedBulletins() {
+          return this.latestBulletins;
+        },
+
         // API Helpers
 
         async loadSystemInfo() {
@@ -250,11 +271,15 @@
           this.showLicense = true;
         },
 
-        async loadLatestBulletins(p) {
+        async loadLatestBulletins(p, s = 'hot') {
+          this.loadingBulletins = true;
           try {
             let params = '';
             if (p) {
               params = params + '?page=' + p;
+            }
+            if (s) {
+              params = params + '&sort=' + s;
             }
             const response = await fetch('/api/v1/bulletins/list' + params);
             if (response.ok) {
@@ -263,6 +288,7 @@
               this.currentBulletinsPage = data.page;
               this.countBulletinsPages = parseInt(data.total / this.countBulletinsPerPage)+1;
               this.totalLatestBulletins = data.total;
+              this.sortedBy = data.sort;
 
               for (let i = 0; i < this.countBulletinsPages; i++) {
                 this.bulletinsPageNumbers[i] = i+1;
@@ -276,6 +302,9 @@
           } catch (error) {
             log.error('Error loading bulletins', { error: error.message });
           }
+          finally {
+            this.loadingBulletins = false;
+          }
         },
 
         async registerVote(bulletinID, value) {
@@ -283,6 +312,7 @@
             return ;
           }
 
+          // TODO: should not register vote if conflicting
           this.knownUserVotes[bulletinID] = value;
           localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.knownUserVotes));
 

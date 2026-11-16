@@ -20,6 +20,12 @@ const router = express.Router();
  *         schema:
  *           type: number
  *         description: The pagination page number.
+ *       - in: query
+ *         name: sort
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: The type of sorting to use.
  *     responses:
  *       200:
  *         description: Bulletins retrieved successfully
@@ -51,6 +57,8 @@ const router = express.Router();
  *                         type: number
  *                       downvotes:
  *                         type: number
+ *                 sort:
+ *                   type: string
  *       400:
  *         $ref: '#/components/schemas/Error'
  *       500:
@@ -58,17 +66,20 @@ const router = express.Router();
  */
 router.get('/list', async (req, res) => {
   try {
-    const { page } = req.query;
+    const { page, sort } = req.query;
     let displayPage = !page ? 1 : page;
     const maxPerPage = 10;
     const offsetPage = (displayPage-1) * maxPerPage;
-    const bulletins = insightsDb.getAllBulletins(maxPerPage, offsetPage);
+    const sortBy = ['hot', 'new', 'top'].includes(sort) ? sort : 'hot';
 
+    const bulletins = insightsDb.getAllBulletins(sortBy, maxPerPage, offsetPage);
     const cntBulletins = insightsDb.getBulletinsCount();
+
     return res.status(200).json({
       bulletins: bulletins,
       page: displayPage,
       total: cntBulletins,
+      sort: sortBy,
     });
   } catch (error) {
     log.error('Error listing bulletins:', { error: error });

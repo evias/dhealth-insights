@@ -41,6 +41,7 @@ try {
       upvotes   INTEGER NOT NULL DEFAULT 0,
       downvotes INTEGER NOT NULL DEFAULT 0,
       sources TEXT NOT NULL DEFAULT '[]',
+      trending INTEGER NOT NULL CHECK (trending IN (0, 1)),
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
