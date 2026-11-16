@@ -89,12 +89,19 @@ const insightsDb = {
     userID,
     voteValue, // -1 or 1
   }) {
+    const get_vote = db.prepare(`SELECT value FROM votes WHERE bulletin_id = ? AND user_id = ?`);
+    const vote_row = get_vote.get(bulletinID, userID);
+
     const stmt_ins = db.prepare(`
       INSERT INTO votes (bulletin_id, user_id, value)
       VALUES (?, ?, ?)
       ON CONFLICT(bulletin_id, user_id)
         DO UPDATE SET value = excluded.value, created_at = unixepoch()
     `);
+
+    stmt_ins.run(
+      bulletinID, userID, voteValue,
+    );
 
     const stmt_bul = db.prepare(`
       UPDATE bulletins
@@ -103,12 +110,12 @@ const insightsDb = {
       WHERE id = ?
     `);
 
-    stmt_ins.run(
-      bulletinID, userID, voteValue,
-    );
+    let addUpvotes = voteValue == 1 ? 1 : (vote_row && 'value' in vote_row && vote_row['value'] === 1 ? -1 : 0);
+    let addDownvotes = voteValue == -1 ? 1 : (vote_row && 'value' in vote_row && vote_row['value'] === -1 ? -1 : 0);
+
     stmt_bul.run(
-      (voteValue == 1 ? 1 : 0),
-      (voteValue == -1 ? 1 : 0),
+      addUpvotes,
+      addDownvotes,
       bulletinID);
 
     return insightsDb.getBulletinByID(bulletinID);

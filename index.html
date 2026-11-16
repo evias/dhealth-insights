@@ -312,7 +312,11 @@
             return ;
           }
 
-          // TODO: should not register vote if conflicting
+          // skip already voted, allow only if vote changes.
+          if (bulletinID in this.knownUserVotes && value === this.knownUserVotes[bulletinID]) {
+            return ;
+          }
+
           this.knownUserVotes[bulletinID] = value;
           localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.knownUserVotes));
 
