@@ -121,6 +121,23 @@ const insightsDb = {
     return insightsDb.getBulletinByID(bulletinID);
   },
 
+  // Update trending flag
+  updateTrending({ id, trending }) {
+    const b = insightsDb.getBulletinByID(id);
+    if (!b || ![1, 0].includes(trending)) {
+      return null;
+    }
+
+    const stmt = db.prepare(`
+      UPDATE bulletins
+      SET trending = ?
+      WHERE id = ?
+    `);
+
+    stmt.run(trending, id);
+    return insightsDb.getBulletinByID(bulletinID);
+  },
+
   // Get bulletins by ID
   getBulletinByID(id) {
     const stmt = db.prepare('SELECT * FROM bulletins WHERE id = ?');

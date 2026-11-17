@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const config = require('./api/config');
 const { createLogger } = require('./api/logger');
+const { apiKeyAuth } = require('./api/middleware/auth');
 
 const app = express();
 const bindHost = config.server.bindHost;
@@ -31,6 +32,16 @@ app.use('/api/v1/bulletins', bulletinsApi);
 
 // Serve assets
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+// GROUP: protected write operations
+const protected = express.Router();
+protected.use(apiKeyAuth);
+
+const writerApi = require('./api/routes/writer');
+protected.use('/', writerApi);
+// END GROUP: protected write operations
+
+app.use('/api/v1/writer', protected);
 
 app.listen(bindPort, bindHost, async () => {
   log.info(`Server started in ${buildType} mode`);

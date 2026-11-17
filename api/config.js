@@ -14,6 +14,7 @@ module.exports = {
 
   api: {
     baseUrl: process.env.API_BASE_URL || 'localhost:3000/api/v1',
+    /* DO NOT add keys here. */
   },
 
   logging: {
