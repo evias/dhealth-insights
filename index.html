@@ -124,6 +124,14 @@
           </div>
         </article>
       </template>
+      <div class="w-full text-center">
+        <button
+          x-show="currentBulletinsPage < totalBulletinsPages"
+          type="button"
+          class="w-[150px] p-2 bg-white text-blue-400 hover:cursor-pointer hover:bg-gray-200 hover:text-blue-700"
+          @click="loadMore()"
+        >Load more</button>
+      </div>
     </div>
 
     <div x-show="showLicense" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" @click.self="showLicense = false">
@@ -173,11 +181,9 @@
         // State
         loadingInfo: false,
         showLicense: false,
-        countBulletinsPerPage: 21,
         currentBulletinsPage: 1,
-        countBulletinsPages: 1,
         totalLatestBulletins: 0,
-        bulletinsPageNumbers: [1],
+        totalBulletinsPages: 1,
         shownBulletins: {},
         loadingBulletins: false,
 
@@ -208,7 +214,12 @@
         },
 
         getBulletinHTML(bulletin) {
-          return bulletin.content.replace('\n', '<br />');
+          let html = bulletin.content.replace('\n', '<br />');
+          html += `<br />
+          <p class="text-right">
+            Written by: ${bulletin.model}
+          </p>`;
+          return html;
         },
 
         getSources(bulletin) {
@@ -234,6 +245,15 @@
 
         get sortedBulletins() {
           return this.latestBulletins;
+        },
+
+        async loadMore() {
+          if (!this.sortedBy) this.sortedBy = 'hot';
+          if (this.currentBulletinsPage+1 > this.totalBulletinsPages) {
+            return ;
+          }
+
+          await this.loadLatestBulletins(this.currentBulletinsPage+1, this.sortedBy, true); // true=append
         },
 
         // API Helpers
@@ -271,7 +291,7 @@
           this.showLicense = true;
         },
 
-        async loadLatestBulletins(p, s = 'hot') {
+        async loadLatestBulletins(p, s = 'hot', a = false) {
           this.loadingBulletins = true;
           try {
             let params = '';
@@ -284,15 +304,18 @@
             const response = await fetch('/api/v1/bulletins/list' + params);
             if (response.ok) {
               const data = await response.json();
-              this.latestBulletins = data.bulletins;
-              this.currentBulletinsPage = data.page;
-              this.countBulletinsPages = parseInt(data.total / this.countBulletinsPerPage)+1;
-              this.totalLatestBulletins = data.total;
-              this.sortedBy = data.sort;
-
-              for (let i = 0; i < this.countBulletinsPages; i++) {
-                this.bulletinsPageNumbers[i] = i+1;
+              if (a === true) {
+                // APPEND mode ("load more")
+                this.latestBulletins.push(...data.bulletins);
+              } else {
+                // SET mode ("view page x")
+                this.latestBulletins = data.bulletins;
               }
+
+              this.currentBulletinsPage = data.page;
+              this.totalLatestBulletins = data.total;
+              this.totalBulletinsPages = data.pages;
+              this.sortedBy = data.sort;
 
               for (let j = 0; j < this.latestBulletins.length; j++) {
                 const bid = this.latestBulletins[j].id;

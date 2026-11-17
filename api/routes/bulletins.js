@@ -38,6 +38,8 @@ const router = express.Router();
  *                   type: number
  *                 total: 
  *                   type: number
+ *                 pages:
+ *                   type: number
  *                 bulletins:
  *                   type: array
  *                   items:
@@ -67,8 +69,8 @@ const router = express.Router();
 router.get('/list', async (req, res) => {
   try {
     const { page, sort } = req.query;
-    let displayPage = !page ? 1 : page;
-    const maxPerPage = 10;
+    let displayPage = !page ? 1 : parseInt(page);
+    const maxPerPage = 2;
     const offsetPage = (displayPage-1) * maxPerPage;
     const sortBy = ['hot', 'new', 'top'].includes(sort) ? sort : 'hot';
 
@@ -79,6 +81,7 @@ router.get('/list', async (req, res) => {
       bulletins: bulletins,
       page: displayPage,
       total: cntBulletins,
+      pages: parseInt(cntBulletins/maxPerPage)+1,
       sort: sortBy,
     });
   } catch (error) {
