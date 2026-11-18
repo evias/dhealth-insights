@@ -70,7 +70,7 @@ router.get('/info', (req, res) => {
  *         $ref: '#/components/schemas/Error'
  */
 router.get('/license', (req, res) => {
-  const licensePath = path.join(__dirname, '..', 'LICENSE');
+  const licensePath = path.join(__dirname, '..', '..', 'LICENSE');
   if (!fs.existsSync(licensePath)) {
     return res.status(500).json({ error: 'License file is missing.' });
   }

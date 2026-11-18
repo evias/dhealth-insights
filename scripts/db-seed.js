@@ -237,6 +237,7 @@ try {
         + "into early interventions, without adding a single hour to your team's week.",
       cta_text: "Explore the dHealth Prevention Platform",
       cta_url: "https://prevention.dhealth.com",
+      num_clicks: Math.floor(Math.random() * 153),
     },
     {
       id: "aidh_request_early_access_aidh",
@@ -248,6 +249,7 @@ try {
         + "piloting it and shape what preventive care looks like in 2030.",
       cta_text: "Request Early Access to AIDH",
       cta_url: "https://www.dhealth.com/ai-agent",
+      num_clicks: Math.floor(Math.random() * 153),
     },
     {
       id: "aidh_create_prevention_agent",
@@ -258,6 +260,7 @@ try {
         + "alerts, and a care team that reaches out before things go wrong.",
       cta_text: "Create your Prevention Agent",
       cta_url: "https://prevention.dhealth.com",
+      num_clicks: Math.floor(Math.random() * 153),
     },
     {
       id: "aidh_meet_your_nutrition_agent",
@@ -268,6 +271,7 @@ try {
         + "preferences, then plans meals that actually move your numbers.",
       cta_text: "Meet your Nutrition Agent",
       cta_url: "https://nutriagent.dhealth.com",
+      num_clicks: Math.floor(Math.random() * 153),
     },
     {
       id: "aidh_meet_your_care_partner",
@@ -279,6 +283,7 @@ try {
         + "a little lighter.",
       cta_text: "Meet your Care Partner",
       cta_url: "https://dementia.dhealth.com",
+      num_clicks: Math.floor(Math.random() * 153),
     },
   ];
 

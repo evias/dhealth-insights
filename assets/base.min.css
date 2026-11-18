@@ -293,6 +293,9 @@
   .items-end {
     align-items: flex-end;
   }
+  .items-stretch {
+    align-items: stretch;
+  }
   .justify-between {
     justify-content: space-between;
   }
@@ -310,6 +313,9 @@
   }
   .gap-x-2 {
     column-gap: calc(var(--spacing) * 2);
+  }
+  .self-end {
+    align-self: flex-end;
   }
   .overflow-y-auto {
     overflow-y: auto;

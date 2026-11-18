@@ -235,16 +235,17 @@ const insightsDb = {
     content,
     cta_text,
     cta_url,
+    num_clicks,
   }) {
     // save bulletin details
     const stmt = db.prepare(`
       INSERT INTO cta_entries (
         id, title, content, cta_text, cta_url, num_clicks
-      ) VALUES (?, ?, ?, ?, ?, 0)
+      ) VALUES (?, ?, ?, ?, ?, ?)
     `);
 
     stmt.run(
-      id, title, content, cta_text, cta_url
+      id, title, content, cta_text, cta_url, num_clicks
     );
 
     return insightsDb.getCTAEntryByID(id);
