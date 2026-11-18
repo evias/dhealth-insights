@@ -165,7 +165,55 @@ try {
       ]),
       tags: "health policy, CMS, Medicaid, healthcare AI, health system finances, hospital M&A, No Surprises Act, prior authorization, UnitedHealth Group, weekly roundup",
       trending: 1,
-    }
+    },
+    {
+      id: "aidh_gva_gemini38flash_20261117",
+      title: "Weekly Insights: Healthcare AI Accelerates Amid Medicaid Policy Delays and GLP-1 Cost Pressures",
+      slug: "weekly-insights-healthcare-ai-accelerates-amid-medicaid-policy-delays-and-glp-1-cost-pressures",
+      excerpt: ""
+        + "This edition of Weekly Insights covers surging health AI adoption—including OpenAI and Apple "
+        + "initiatives—alongside CMS's six-month Medicaid work requirement extension, nonprofit hospital "
+        + "financial pressures, and new pricing studies surrounding GLP-1 obesity therapies.",
+      content: ""
+        + "The healthcare sector is experiencing an acceleration in artificial intelligence deployment "
+        + "alongside significant operational hurdles. Healthcare AI expenditure more than doubled over "
+        + "the past year to $3.7 million per provider organization as health systems increasingly invest "
+        + "in clinical copilots, conversational AI, and front-office automation. Major industry moves "
+        + "include Apple and OpenEvidence launching a 200,000-participant conversational health AI study "
+        + "and app, while OpenAI is collaborating with CVS Health, Cigna, and Abridge to pilot "
+        + "computer-use agents designed to navigate EHRs and payer portals. Simultaneously, Suki "
+        + "introduced an agentic operating system for clinical workflows, and Dyania Health teamed "
+        + "with Nvidia to run clinical reasoning on-premise. However, scaling these technologies "
+        + "beyond initial pilot phases remains a challenge due to unpredictable costs and mounting "
+        + "technical complexity, as highlighted in a recent Google Cloud analysis.\n\n"
+        + "Policy shifts and payer-provider dynamics are equally redefining operational priorities. "
+        + "The Centers for Medicare & Medicaid Services (CMS) granted states an optional six-month "
+        + "enforcement delay through June 30, 2027, for new Medicaid work requirements, giving "
+        + "administrations time to refine eligibility tracking without terminating coverage. On the "
+        + "regulatory front, ONC is rolling out testing environments for electronic prior "
+        + "authorization ahead of federal deadlines, while Medicare has extended a six-month "
+        + "enrollment moratorium on new home health and hospice providers due to fraud concerns. In "
+        + "the provider market, nonprofit systems face growing financial headwinds: CommonSpirit "
+        + "Health posted a $544 million operating loss to open its fiscal year 2027, and a Lown "
+        + "Institute report revealed that the value of tax breaks for most nonprofit hospitals "
+        + "exceeded their community benefit spending.\n\n"
+        + "Pharmaceutical pricing and chronic care management continue to dominate payer strategies, "
+        + "specifically surrounding GLP-1 therapies. A CVS white paper indicated that GLP-1 drugs "
+        + "could yield long-term net savings for employers if manufacturers price them at $350 per "
+        + "month or below, placing direct pressure on drugmakers to lower rates. At the same time, "
+        + "clinical findings from Calibrate and Withings showed that integrating GLP-1 medications "
+        + "with comprehensive wraparound lifestyle programs boosted patient weight loss by more "
+        + "than 60% compared to medication alone, emphasizing that tech-enabled clinical care "
+        + "models remain critical to achieving sustainable clinical and financial outcomes.",
+      model: "gva/gemini-3.8-flash",
+      sources: JSON.stringify([
+        "https://www.healthcaredive.com",
+        "https://www.fiercehealthcare.com",
+        "https://thehealthcareblog.com",
+      ]),
+      tags: "Healthcare AI, CMS, Medicaid, Health Tech, GLP-1, Prior Authorization, Hospital Finance, weekly insights",
+      trending: 1,
+    },
   ];
 
   let bulletinCount = 0;
@@ -178,8 +226,75 @@ try {
     bulletinCount++;
   }
 
+  const ctaEntries = [
+    {
+      id: "aidh_explore_dhealth_prevention",
+      title: "🩺 Your Patients Are Changing. Is Your Practice?",
+      content: ""
+        + "Health systems that adopted AI-assisted prevention workflows last year are already "
+        + "flagging chronic-risk patients months earlier — while others are still reacting to "
+        + "symptoms. See how dHealth's prevention-first intelligence turns raw clinical signals "
+        + "into early interventions, without adding a single hour to your team's week.",
+      cta_text: "Explore the dHealth Prevention Platform",
+      cta_url: "https://prevention.dhealth.com",
+    },
+    {
+      id: "aidh_request_early_access_aidh",
+      title: "🤖 Meet AIDH: AI That Reads Health Before Disease Does 🤖",
+      content: ""
+        + "AIDH fuses wearables data, clinical guidelines, and population-level signals into "
+        + "one continuously learning prevention engine. No black boxes — every risk score is "
+        + "explainable, auditable, and clinician-approved. Join the first cohort of clinics "
+        + "piloting it and shape what preventive care looks like in 2030.",
+      cta_text: "Request Early Access to AIDH",
+      cta_url: "https://www.dhealth.com/ai-agent",
+    },
+    {
+      id: "aidh_create_prevention_agent",
+      title: "🏥 The Best Appointment Is the One You Never Need. 🏥",
+      content: ""
+        + "Preventive care saves systems billions — yet under 8% of adults get recommended "
+        + "preventive services on time. Flip the model: continuous monitoring, proactive "
+        + "alerts, and a care team that reaches out before things go wrong.",
+      cta_text: "Create your Prevention Agent",
+      cta_url: "https://prevention.dhealth.com",
+    },
+    {
+      id: "aidh_meet_your_nutrition_agent",
+      title: "🍽️ Stop Guessing What to Eat. Ask Your Agent. 🍽️",
+      content: ""
+        + "Calorie apps tell you what you ate. NutriAgent tells you what to do next —"
+        + " an AI nutrition agent that learns your glucose response, goals, and "
+        + "preferences, then plans meals that actually move your numbers.",
+      cta_text: "Meet your Nutrition Agent",
+      cta_url: "https://nutriagent.dhealth.com",
+    },
+    {
+      id: "aidh_meet_your_care_partner",
+      title: "🤝 You Don't Have to Navigate This Journey Alone. 🤝",
+      content: ""
+        + "Caring for a loved one with dementia is a path no family should walk "
+        + "unprepared. dHealth brings together guidance, daily routines, and a "
+        + "supportive community of families who understand — so every step feels "
+        + "a little lighter.",
+      cta_text: "Meet your Care Partner",
+      cta_url: "https://dementia.dhealth.com",
+    },
+  ];
+
+  let ctaEntriesCount = 0;
+
+  for (const entry of ctaEntries) {
+
+    insightsDb.createCTAEntry(entry)
+
+    console.log(`  ✓ Added CTA entry: ${entry.id}`);
+    ctaEntriesCount++;
+  }
+
   console.log(`\n✅ Database seeded successfully!`);
   console.log(`   Added ${bulletinCount} bulletins`);
+  console.log(`   Added ${ctaEntriesCount} CTA entries`);
 
 } catch (error) {
   console.error('❌ Seeding failed:', error.message);

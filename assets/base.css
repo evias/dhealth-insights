@@ -48,6 +48,19 @@ button.btn{font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spaci
 button.btn:hover{border-color:var(--steel);color:var(--steel)}
 button.btn.active{background:var(--steel);border-color:var(--steel);color:#fff}
 
+/* ===== CTA cards ===== */
+.cta-entry{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1rem 1.25rem;margin-bottom:.75rem;display:flex;gap:1.1rem;transition:border-color .15s, box-shadow .15s}
+.cta-entry:hover{border-color:var(--line-strong);box-shadow:0 2px 8px rgba(22,40,58,.07)}
+.cta-entry .left-panel {display:flex;flex-direction:column;align-items:center;gap:.25rem;min-width:42px;padding-top:.15rem}
+.cta-entry h2{font-size:.98rem;font-weight:600;margin-bottom:.3rem;line-height:1.35}
+.cta-entry p{font-size:.85rem;color:var(--ink-soft);line-height:1.55}
+
+.meta.cta-meta a:link, .meta.cta-meta a:focus, .meta.cta-meta a:visited {font-family:var(--sans);font-size:.98rem;font-weight:600;line-height:1.35;color:var(--steel-tint)}
+.meta.cta-meta a:hover, .meta.cta-meta a:active {font-family:var(--sans);font-size:.98rem;font-weight:600;line-height:1.35;color:var(--steel-tint);opacity: .8}
+
+.meta.cta-meta .src{font-family:var(--mono);font-size:.68rem;color:var(--prem);}
+
 /* ===== Bulletin cards ===== */
 .bulletin{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
   padding:1rem 1.25rem;margin-bottom:.75rem;display:flex;gap:1.1rem;transition:border-color .15s, box-shadow .15s}
@@ -66,7 +79,7 @@ button.btn.active{background:var(--steel);border-color:var(--steel);color:#fff}
   padding:.18rem .55rem;border-radius:var(--radius);background:var(--steel-tint);color:var(--steel-dark)}
 .chip.prem{background:var(--prem-tint);color:var(--prem)}
 .chip.ok{background:var(--ok-tint);color:var(--ok)}
-.src{font-family:var(--mono);font-size:.68rem;color:var(--lock);margin-left:auto}
+.meta:not(.cta-meta) .src{font-family:var(--mono);font-size:.68rem;color:var(--lock);margin-left:auto}
 
 .meta a:link, .meta a:focus, .meta a:visited {font-family:var(--mono);font-size:.68rem;color:var(--lock)}
 .meta a:hover, .meta a:active {font-family:var(--mono);font-size:.68rem;color:var(--lock); opacity: 0.8;}

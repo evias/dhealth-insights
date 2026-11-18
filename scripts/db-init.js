@@ -79,6 +79,18 @@ try {
     CREATE INDEX idx_bulletin_tags_tag ON bulletin_tags(tag_id, bulletin_id);
   `);
 
+  // Create ads table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS cta_entries (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      cta_text TEXT NOT NULL,
+      cta_url TEXT NOT NULL,
+      num_clicks INTEGER NOT NULL DEFAULT 0
+    );
+  `);
+
   console.log('  ✓ Database schema created at:', { value: dbPath });
 
   db.close();

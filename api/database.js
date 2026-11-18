@@ -31,6 +31,14 @@ db.pragma('foreign_keys = ON');
 
 // Database helpers
 const insightsDb = {
+
+  // ----------------------------------------------------------------------------
+  // Bulletins/Feed and Votes Tables:
+  // - `bulletins`
+  // - `tags`
+  // - `bulletin_tags`
+  // - `votes`
+
   // Create new bulletins entry
   createBulletin({
     id,
@@ -57,7 +65,7 @@ const insightsDb = {
       id, title, slug, excerpt, content, model, sources, trending,
       now, now
     );
-  
+
     // cleanup tags for bulletin
     const stmtTags_1 = db.prepare(`
       DELETE FROM bulletin_tags WHERE bulletin_id = ?
@@ -214,6 +222,75 @@ const insightsDb = {
       SELECT * FROM bulletin_tags where bulletin_id = ?
     `)
     return stmt.all(id)
+  },
+
+  // ----------------------------------------------------------------------------
+  // Ads/CTA Tables:
+  // - `cta_entries`
+
+  // Create new cta_entries
+  createCTAEntry({
+    id,
+    title,
+    content,
+    cta_text,
+    cta_url,
+  }) {
+    // save bulletin details
+    const stmt = db.prepare(`
+      INSERT INTO cta_entries (
+        id, title, content, cta_text, cta_url, num_clicks
+      ) VALUES (?, ?, ?, ?, ?, 0)
+    `);
+
+    stmt.run(
+      id, title, content, cta_text, cta_url
+    );
+
+    return insightsDb.getCTAEntryByID(id);
+  },
+
+  // Update cta_entries.num_clicks
+  addClick({ id }) {
+    const ad = insightsDb.getCTAEntryByID(id);
+    if (!ad) {
+      return null;
+    }
+
+    const stmt = db.prepare(`
+      UPDATE cta_entries
+      SET num_clicks = num_clicks + 1
+      WHERE id = ?
+    `);
+
+    stmt.run(id);
+    return insightsDb.getCTAEntryByID(id);
+  },
+
+  // Get cta_entries by ID
+  getCTAEntryByID(id) {
+    const stmt = db.prepare('SELECT * FROM cta_entries WHERE id = ?');
+    const row = stmt.get(id);
+    return row;
+  },
+
+  // Get all cta_entries rows
+  getAllCTAEntries(limit, offset) {
+    const stmt = db.prepare(`
+      SELECT cta_entries.*
+      FROM cta_entries
+      ORDER BY id ASC
+      LIMIT ?
+      OFFSET ?
+    `);
+    const rows = stmt.all(limit, offset);
+    return rows;
+  },
+
+  // Get total cta_entries count
+  getCTAEntriesCount() {
+    let stmt = db.prepare('SELECT COUNT(*) as count FROM cta_entries');
+    return stmt.get().count ?? 0;
   }
 };
 

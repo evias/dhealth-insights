@@ -30,6 +30,10 @@ app.use('/api/v1/system', systemApi);
 const bulletinsApi = require('./api/routes/bulletins');
 app.use('/api/v1/bulletins', bulletinsApi);
 
+// Ads API routes
+const adsApi = require('./api/routes/ads');
+app.use('/api/v1/ads', adsApi);
+
 // Serve assets
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 

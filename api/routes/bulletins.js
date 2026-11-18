@@ -98,6 +98,23 @@ router.get('/list', async (req, res) => {
  *       - Bulletins
  *     summary: Register upvote/downvote for a bulletin.
  *     description: Registers a vote for a bulletin.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - bulletinID
+ *               - userID
+ *               - voteValue
+ *             properties:
+ *               bulletinID:
+ *                 type: string
+ *               userID:
+ *                 type: string
+ *               voteValue:
+ *                 type: number
  *     responses:
  *       200:
  *         description: Vote registered successfully

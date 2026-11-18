@@ -44,93 +44,138 @@
       <button class="btn" @click="resetVotes()">RESET MY VOTES</button>
     </div>
     <div id="feed" class="min-h-screen">
-      <template x-for="bulletin in sortedBulletins" :key="bulletin.id">
-        <article class="bulletin">
-          <div class="vote">
-            <button
-              class="up"
-              :class="{
-                'active': knownUserVotes[bulletin.id] === 1
-              }"
-              @click="registerVote(bulletin.id, 1)"
-              aria-label="Upvote">&#9650;</button>
-            <span class="score" x-text="bulletinsScores[bulletin.id]"></span>
-            <button
-              class="down"
-              :class="{
-                'active': knownUserVotes[bulletin.id] === -1
-              }"
-              @click="registerVote(bulletin.id, -1)"
-              aria-label="Downvote">&#9660;</button>
-          </div>
-          <div class="w-full flex flex-col">
-            <h2 x-text="bulletin.title"></h2>
-            <div class="flex flex-row items-center">
-              <p x-text="bulletin.excerpt"></p>
-              <div class="ml-2">
-                <button
-                  type="button"
-                  title="Read more"
-                  class="hover:cursor-pointer"
-                  x-show="!shownBulletins[bulletin.id]"
-                  @click="shownBulletins[bulletin.id] = true">
-                  <!-- chevron-double-down -->
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    stroke-width="1.5" stroke="currentColor"
-                    class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  title="Hide bulletin"
-                  class="hover:cursor-pointer"
-                  x-show="shownBulletins[bulletin.id]"
-                  @click="shownBulletins[bulletin.id] = false">
-                  <!-- chevron-double-up -->
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    stroke-width="1.5" stroke="currentColor"
-                    class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
-                  </svg>
-                </button>
+      <template x-for="(bulletin, b_i) in sortedBulletins" :key="bulletin.id">
+        <div>
+          <article
+            x-show="b_i > 0 && b_i % 2 === 0"
+            class="cta-entry">
+            <div class="left-panel">
+              <div class="mx-auto">
+                <a :href="'https://dhealth.com/contact'" target="_blank">
+                  <img
+                    src="/assets/logo-dhealth.png" title="dHealth Intelligence"
+                    class="h-[128px] w-[128px]" />
+                </a>
               </div>
             </div>
-            <div x-html="getBulletinHTML(bulletin)"
-                class="text-sm py-2 text-justify"
+            <div
+              class="w-full flex flex-col"
+              x-data="{ cta: getRandomCTA() }">
+              <h2 x-text="cta.title"></h2>
+              <div class="flex flex-row items-center">
+                <p x-text="cta.content"></p>
+              </div>
+              <div class="meta cta-meta flex flex-row gap-1">
+                <button
+                  type="button"
+                  target="_blank"
+                  class="text-md relative inline-flex items-center gap-x-2 rounded-lg bg-teal-600 px-6 py-4 font-semibold text-white shadow-sm hover:bg-teal-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                  @click="clickCTA(cta)">
+                  <span x-text="cta.cta_text"></span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="-mr-0.5 h-5 w-5">
+                    <path fill-rule="evenodd" d="M16.72 7.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 010 1.06l-3.75 3.75a.75.75 0 11-1.06-1.06l2.47-2.47H3a.75.75 0 010-1.5h16.19l-2.47-2.47a.75.75 0 010-1.06z" clip-rule="evenodd"></path>
+                  </svg>
+                </button>
+                <em class="src align-text-bottom"><span x-text="cta.num_clicks"></span> clicks</em>
+              </div>
+            </div>
+          </article>
+          <article class="bulletin">
+            <div class="vote">
+              <button
+                class="up"
                 :class="{
-                  'hidden': !shownBulletins[bulletin.id]
-                }"></div>
-            <div class="meta">
-              <template x-for="tag in bulletin.tags.split(',')" :key="tag">
-                <span
-                  class="chip" x-text="tag"></span>
-              </template>
+                  'active': knownUserVotes[bulletin.id] === 1
+                }"
+                @click="registerVote(bulletin.id, 1)"
+                aria-label="Upvote">&#9650;</button>
+              <span class="score" x-text="bulletinsScores[bulletin.id]"></span>
+              <button
+                class="down"
+                :class="{
+                  'active': knownUserVotes[bulletin.id] === -1
+                }"
+                @click="registerVote(bulletin.id, -1)"
+                aria-label="Downvote">&#9660;</button>
             </div>
-            <div class="meta">
-              <span class="src">sources: </span>
-              <ul class="flex flex-row gap-2">
-                <template x-for="(src, i) in getSources(bulletin)" :key="src">
-                  <li class="src">
-                    <a :href="src" target="_blank" x-text="getSourceName(src)"></a>
-                    <span x-show="i+1 < getSources(bulletin).length"> • </span>
-                  </li>
+            <div class="w-full flex flex-col">
+              <h2 x-text="bulletin.title"></h2>
+              <div class="flex flex-row items-center">
+                <p x-text="bulletin.excerpt"></p>
+                <div class="ml-2">
+                  <button
+                    type="button"
+                    title="Read more"
+                    class="hover:cursor-pointer"
+                    x-show="!shownBulletins[bulletin.id]"
+                    @click="shownBulletins[bulletin.id] = true">
+                    <!-- chevron-double-down -->
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                      stroke-width="1.5" stroke="currentColor"
+                      class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    title="Hide bulletin"
+                    class="hover:cursor-pointer"
+                    x-show="shownBulletins[bulletin.id]"
+                    @click="shownBulletins[bulletin.id] = false">
+                    <!-- chevron-double-up -->
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                      stroke-width="1.5" stroke="currentColor"
+                      class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div x-html="getBulletinHTML(bulletin)"
+                  class="text-sm py-2 text-justify"
+                  :class="{
+                    'hidden': !shownBulletins[bulletin.id]
+                  }"></div>
+              <div class="meta">
+                <template x-for="tag in bulletin.tags.split(',')" :key="tag">
+                  <span
+                    class="chip" x-text="tag"></span>
                 </template>
-              </ul>
+              </div>
+              <div class="meta">
+                <span class="src">sources: </span>
+                <ul class="flex flex-row gap-2">
+                  <template x-for="(src, i) in getSources(bulletin)" :key="src">
+                    <li class="src">
+                      <a :href="src" target="_blank" x-text="getSourceName(src)"></a>
+                      <span x-show="i+1 < getSources(bulletin).length"> • </span>
+                    </li>
+                  </template>
+                </ul>
+              </div>
             </div>
-          </div>
-        </article>
+          </article>
+        </div>
       </template>
       <div class="w-full text-center">
         <button
           x-show="currentBulletinsPage < totalBulletinsPages"
           type="button"
-          class="w-[150px] p-2 bg-white text-blue-400 hover:cursor-pointer hover:bg-gray-200 hover:text-blue-700"
+          class="mx-auto w-[250px] p-2 flex flex-row gap-2 items-center justify-center bg-white rounded-md border border-gray-400 text-blue-400 hover:cursor-pointer hover:bg-gray-100 hover:text-blue-500"
           @click="loadMore()"
-        >Load more</button>
+        >
+          <!-- arrow-path -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="1.5" stroke="currentColor"
+            class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+          </svg>
+          <span>Load more</span>
+        </button>
       </div>
     </div>
 
@@ -177,6 +222,7 @@
         knownUserVotes: {},
         insightsUserID: '',
         sortedBy: 'hot',
+        ctaEntries: [],
 
         // State
         loadingInfo: false,
@@ -191,6 +237,7 @@
 
         async init() {
           this.loadSystemInfo();
+          this.loadCTAEntries();
           this.loadLatestBulletins(1);
 
           this.insightsUserID = localStorage.getItem(this.PROFILE_KEY)||this.getRandomUserID();
@@ -254,6 +301,12 @@
           }
 
           await this.loadLatestBulletins(this.currentBulletinsPage+1, this.sortedBy, true); // true=append
+        },
+
+        getRandomCTA() {
+          if (!this.ctaEntries.length) return null;
+          const randCtaIdx = Math.floor(Math.random() * this.ctaEntries.length);
+          return this.ctaEntries[randCtaIdx];
         },
 
         // API Helpers
@@ -363,7 +416,41 @@
             this.bulletinsScores[bulletinID] = data.score || 0;
           } catch (error) {
             log.error('Error registering vote', { error: error.message });
-            this.formError = error.message || 'Failed to register vote';
+          }
+        },
+
+        async loadCTAEntries() {
+          try {
+            const response = await fetch('/api/v1/ads');
+            if (response.ok) {
+              const data = await response.json();
+              this.ctaEntries = data.ads;
+            }
+          } catch (error) {
+            log.error('Error reading ads', { error: error.message });
+          }
+        },
+
+        async clickCTA(cta) {
+          try {
+            const response = await fetch('/api/v1/ads/click', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                ctaID: cta.id,
+                userID: this.insightsUserID,
+              }),
+            });
+
+            if (!response.ok) {
+              const error = await response.json();
+              throw new Error(error.error);
+            }
+
+            window.open(cta.cta_url, '_blank');
+            return false;
+          } catch (error) {
+            log.error('Error registering click', { error: error.message });
           }
         }
       }

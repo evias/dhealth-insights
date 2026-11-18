@@ -158,4 +158,76 @@ router.post('/trending', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/v1/writer/ads:
+ *   post:
+ *     tags:
+ *       - Ads
+ *     summary: Post new ad.
+ *     description: Posts a new ad.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - content
+ *               - cta_text
+ *               - cta_url
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               cta_text:
+ *                 type: string
+ *               cta_url:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Ad created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 id:
+ *                   type: string
+ *       400:
+ *         $ref: '#/components/schemas/Error'
+ *       500:
+ *         $ref: '#/components/schemas/Error'
+ */
+router.post('/ads', async (req, res) => {
+  try {
+    const { title, content, cta_text, cta_url } = req.body;
+    if (!title || !content || !cta_text || !cta_url) {
+      return res.status(400).json({ error: 'Invalid Request' });
+    } else if (
+      !title.length || !content.length || !cta_text.length || !cta_url.length) {
+      return res.status(400).json({ error: 'Invalid Request' });
+    }
+
+    const tzNow = new Date().valueOf();
+    const id = "aidh_" + slugify(title) + "_" + tzNow;
+
+    const cta_entry = insightsDb.createCTAEntry({
+      id, title, content, cta_text, cta_url,
+    });
+
+    return res.status(200).json({
+      success: true,
+      id: cta_entry.id,
+    });
+  } catch (error) {
+    log.error('Error creating ad:', { error: error });
+    res.status(500).json({ error: 'Failed to create ad' });
+  }
+});
+
 module.exports = router;
