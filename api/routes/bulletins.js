@@ -70,7 +70,7 @@ router.get('/list', async (req, res) => {
   try {
     const { page, sort } = req.query;
     let displayPage = !page ? 1 : parseInt(page);
-    const maxPerPage = 2;
+    const maxPerPage = 10;
     const offsetPage = (displayPage-1) * maxPerPage;
     const sortBy = ['hot', 'new', 'top'].includes(sort) ? sort : 'hot';
 
