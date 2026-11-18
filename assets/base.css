@@ -138,3 +138,36 @@ footer span, footer em {color:var(--line-strong)}
 footer b{color:var(--prem-tint)}
 footer a:link, footer a:focus, footer a:visited {color:var(--prem-tint)}
 footer a:hover, footer a:active {color:var(--prem-tint); opacity: 0.8;}
+
+/* ===== Glossary ===== */
+.glossary-term {
+  border-bottom: 1px dotted #0ea5e9;
+  cursor: help;
+  position: relative;
+}
+.glossary-term .tooltip {
+  display: none;
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  width: 240px;
+  z-index: 10;
+}
+.glossary-term .tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #1e293b transparent transparent transparent;
+}
+.glossary-term:hover .tooltip,
+.glossary-term:focus .tooltip { display: block; }
