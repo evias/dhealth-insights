@@ -42,28 +42,27 @@ try {
 
   // Define all migrations (indexed by migration number)
   const migrations = [
-    // // Migration 1: Add mandate_authority to pets
-    // {
-    //   name: 'Add mandate_authority column to pets',
-    //   up: (db) => {
-    //     try {
-    //       const petTableInfo = db.prepare("PRAGMA table_info(pets)").all();
-    //       const hasMandate = petTableInfo.some(col => col.name === 'mandate_authority');
+    // Migration 1: Add subscribers table
+    {
+      name: 'Add subscribers table',
+      up: (db) => {
+        try {
+          db.exec(`
+            CREATE TABLE IF NOT EXISTS subscribers (
+              id TEXT PRIMARY KEY,
+              email TEXT NOT NULL,
+              name TEXT NOT NULL,
+              subscribed_at   INTEGER NOT NULL DEFAULT (unixepoch()),
+              unsubscribed_at INTEGER
+            ) WITHOUT ROWID;
+          `);
 
-    //       if (!hasMandate) {
-    //         db.exec(`ALTER TABLE pets ADD COLUMN mandate_authority TEXT;`);
-    //         db.prepare(`UPDATE pets SET mandate_authority = owner WHERE mandate_authority IS NULL`).run();
-    //         return true;
-    //       }
-    //       return false;
-    //     } catch (error) {
-    //       if (error.message.includes('duplicate column')) {
-    //         return false;
-    //       }
-    //       throw error;
-    //     }
-    //   }
-    // },
+          return true;
+        } catch (error) {
+          throw error;
+        }
+      }
+    },
   ];
 
   console.log(`   Total migrations defined: ${migrations.length}`);

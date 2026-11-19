@@ -34,6 +34,10 @@ app.use('/api/v1/bulletins', bulletinsApi);
 const adsApi = require('./api/routes/ads');
 app.use('/api/v1/ads', adsApi);
 
+// Mailer API routes
+const mailsApi = require('./api/routes/mails');
+app.use('/api/v1/mails', mailsApi);
+
 // Serve assets
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 

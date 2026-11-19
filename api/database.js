@@ -1,6 +1,7 @@
 const Database = require('better-sqlite3');
 const path = require('path');
 const fs = require('fs');
+const { encrypt, sha256 } = require('./crypto');
 
 // Use test database in test environment, production database otherwise
 const dbFileName = process.env.NODE_ENV === 'test' ? 'insights.test.db' : 'insights.db';
@@ -237,7 +238,7 @@ const insightsDb = {
     cta_url,
     num_clicks,
   }) {
-    // save bulletin details
+    // save cta_entries details
     const stmt = db.prepare(`
       INSERT INTO cta_entries (
         id, title, content, cta_text, cta_url, num_clicks
@@ -292,7 +293,86 @@ const insightsDb = {
   getCTAEntriesCount() {
     let stmt = db.prepare('SELECT COUNT(*) as count FROM cta_entries');
     return stmt.get().count ?? 0;
+  },
+
+  // ----------------------------------------------------------------------------
+  // Subscribers Tables:
+  // - `subscribers`
+
+  // Create new subscribers
+  createSubscriber({
+    email,
+    name,
+  }) {
+    const shaEmail = sha256(email); // id
+    const exists = insightsDb.getSubscriberByID(shaEmail);
+    if (!!exists) {
+      return exists;
+    }
+
+    const encEmail = encrypt(email); // email is encrypted
+
+    // save subscribers details
+    const stmt = db.prepare(`
+      INSERT INTO subscribers (
+        id, email, name
+      ) VALUES (?, ?, ?)
+    `);
+
+    stmt.run(
+      shaEmail, encEmail, name
+    );
+
+    return insightsDb.getSubscriberByID(shaEmail);
+  },
+
+  unsubscribeSubscriber(id) {
+    const exists = insightsDb.getSubscriberByID(id);
+    if (!exists) {
+      return false;
+    }
+
+    const stmt = db.prepare(`
+      UPDATE subscribers
+      SET unsubscribed_at = unixepoch()
+      WHERE id = ?
+    `);
+
+    stmt.run(id);
+    return true;
+  },
+
+  getSubscriberByID(id) {
+    const stmt = db.prepare('SELECT * FROM subscribers WHERE id = ?');
+    const row = stmt.get(id);
+    return row;
+  },
+
+  getSubscriberByMail(mail) {
+    const shaEmail = sha256(mail); // id
+    const stmt = db.prepare('SELECT * FROM subscribers WHERE id = ?');
+    const row = stmt.get(shaEmail);
+    return row;
+  },
+
+  getAllSubscribers(limit, offset) {
+    const stmt = db.prepare(`
+      SELECT subscribers.*
+      FROM subscribers
+      WHERE unsubscribed_at IS NULL
+      ORDER BY subscribed_at ASC
+      LIMIT ?
+      OFFSET ?
+    `);
+    const rows = stmt.all(limit, offset);
+    return rows;
+  },
+
+  getSubscribersCount() {
+    let stmt = db.prepare('SELECT COUNT(*) as count FROM subscribers WHERE unsubscribed_at IS NULL');
+    return stmt.get().count ?? 0;
   }
+
 };
 
 // Export only insightsDb helpers
