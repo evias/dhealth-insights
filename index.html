@@ -13,7 +13,7 @@
   <link href="/assets/fonts/IBMPlex.css" rel="stylesheet">
 </head>
 <body x-data="insightsUI()">
-  <header>
+  <header class="flex flex-wrap items-center text-center gap-x-4 gap-y-2 px-4 py-3 sm:px-8 sm:py-4">
     <!-- logo-dhealth-insights -->
     <svg class="logo" viewBox="0 0 64 64" aria-label="dHealth Insights">
       <rect width="64" height="64" rx="12" fill="#FFFFFF"/>
@@ -24,16 +24,16 @@
       <circle cx="24.6" cy="31.4" r="1.6" fill="#16283A"/><circle cx="42.6" cy="31.4" r="1.6" fill="#16283A"/>
       <path d="M22 43.5q10 5.5 20 0" fill="none" stroke="#2C6BA0" stroke-width="3" stroke-linecap="round"/>
     </svg>
-    <div>
-      <h1>dHealth Intelligence</h1>
+    <div class="min-w-0">
+      <h1 class="text-lg sm:text-xl">dHealth Intelligence</h1>
       <div class="sub">DAILY INDUSTRY INSIGHTS</div>
     </div>
-    <div class="date items-center">
-      <span class="date" id="today"></span><span> • </span>
+    <div class="date flex flex-wrap items-center gap-x-1 w-full sm:w-auto sm:ml-auto">
+      <span class="date" id="today"></span><span class="sm:hidden"> • </span>
       <span class="date" x-text="'User: ' + insightsUserID"></span>
       <span
         @click="changeUserID()"
-        class="date hover:cursor-pointer">
+        class="date inline hover:cursor-pointer">
         <!-- arrow-path -->
         <svg
           xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -46,12 +46,14 @@
   </header>
 
   <main>
-    <div class="toolbar">
-      <span class="tagline">// community-ranked bulletins &mdash; cast your vote</span>
-      <button class="btn" :class="{'active': sortedBy === 'hot'}" @click="sortBy('hot')">HOT</button>
-      <button class="btn" :class="{'active': sortedBy === 'new'}" @click="sortBy('new')">NEW</button>
-      <button class="btn" :class="{'active': sortedBy === 'top'}" @click="sortBy('top')">TOP</button>
-      <button class="btn" @click="resetVotes()">RESET MY VOTES</button>
+    <div class="toolbar flex-wrap sm:text-center">
+      <span class="tagline w-full sm:w-auto sm:text-xs sm:mb-2">// community-ranked bulletins &mdash; cast your vote</span>
+      <div class="mx-auto">
+        <button class="btn" :class="{'active': sortedBy === 'hot'}" @click="sortBy('hot')">HOT</button>
+        <button class="btn" :class="{'active': sortedBy === 'new'}" @click="sortBy('new')">NEW</button>
+        <button class="btn" :class="{'active': sortedBy === 'top'}" @click="sortBy('top')">TOP</button>
+        <button class="btn" @click="resetVotes()">RESET MY VOTES</button>
+      </div>
     </div>
     <div id="feed" class="min-h-screen">
       <template x-for="(bulletin, b_i) in sortedBulletins" :key="bulletin.id">
@@ -64,29 +66,29 @@
                 <a :href="'https://dhealth.com/contact'" target="_blank">
                   <img
                     src="/assets/logo-dhealth.png" title="dHealth Intelligence"
-                    class="h-[128px] w-[128px]" />
+                    class="h-[96px] w-[96px] sm:h-[128px] sm:w-[128px]" />
                 </a>
               </div>
             </div>
             <div
-              class="w-full flex flex-col"
+              class="w-full min-w-0 flex flex-col"
               x-data="{ cta: getRandomCTA() }">
               <h2 x-text="cta.title"></h2>
               <div class="flex flex-row items-center">
                 <p x-text="cta.content"></p>
               </div>
-              <div class="meta cta-meta flex flex-row gap-1 items-stretch">
+              <div class="meta cta-meta flex flex-col sm:flex-row gap-2 sm:gap-1 items-stretch sm:items-end">
                 <button
                   type="button"
                   target="_blank"
-                  class="text-md relative inline-flex items-center gap-x-2 rounded-lg bg-teal-600 px-6 py-4 font-semibold text-white shadow-sm hover:cursor-pointer hover:bg-teal-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                  class="text-md relative inline-flex items-center justify-center gap-x-2 rounded-lg bg-teal-600 px-4 py-3 sm:px-6 sm:py-4 font-semibold text-white shadow-sm hover:cursor-pointer hover:bg-teal-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 w-full sm:w-auto"
                   @click="clickCTA(cta)">
                   <span x-text="cta.cta_text"></span>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="-mr-0.5 h-5 w-5">
                     <path fill-rule="evenodd" d="M16.72 7.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 010 1.06l-3.75 3.75a.75.75 0 11-1.06-1.06l2.47-2.47H3a.75.75 0 010-1.5h16.19l-2.47-2.47a.75.75 0 010-1.06z" clip-rule="evenodd"></path>
                   </svg>
                 </button>
-                <em class="src self-end">and join <span class="font-bold" x-text="cta.num_clicks"></span> community members!</em>
+                <em class="src self-center sm:self-end text-center sm:text-left">and join <span class="font-bold" x-text="cta.num_clicks"></span> community members!</em>
               </div>
             </div>
           </article>
@@ -108,11 +110,30 @@
                 @click="registerVote(bulletin.id, -1)"
                 aria-label="Downvote">&#9660;</button>
             </div>
-            <div class="w-full flex flex-col">
-              <h2 x-text="bulletin.title"></h2>
-              <div class="flex flex-row items-center">
-                <p x-text="bulletin.excerpt"></p>
-                <div class="ml-2">
+            <div class="w-full min-w-0 flex flex-col">
+              <div class="flex flex-row items-center mb-2">
+                <h2 class="break-words" x-text="bulletin.title"></h2>
+                <div class="vote-mobile">
+                  <button
+                    class="up"
+                    :class="{
+                      'active': knownUserVotes[bulletin.id] === 1
+                    }"
+                    @click="registerVote(bulletin.id, 1)"
+                    aria-label="Upvote">&#9650;</button>
+                  <span class="score" x-text="bulletinsScores[bulletin.id]"></span>
+                  <button
+                    class="down"
+                    :class="{
+                      'active': knownUserVotes[bulletin.id] === -1
+                    }"
+                    @click="registerVote(bulletin.id, -1)"
+                    aria-label="Downvote">&#9660;</button>
+                </div>
+              </div>
+              <div class="flex flex-row items-start min-w-0">
+                <p class="min-w-0 break-words text-justify" x-text="bulletin.excerpt"></p>
+                <div class="ml-2 mt-6 sm:mt-4">
                   <button
                     type="button"
                     title="Read more"
@@ -156,12 +177,13 @@
                 </template>
               </div>
               <div class="meta">
-                <span class="src">sources: </span>
-                <ul class="flex flex-row gap-2">
+                <span class="src date" x-text="getBulletinDate(bulletin)"></span>
+                <span class="src hidden sm:inline">sources: </span>
+                <ul class="min-w-0 hidden sm:flex sm:flex-row sm:flex-wrap gap-2">
                   <template x-for="(src, i) in getSources(bulletin)" :key="src">
                     <li class="src">
                       <a :href="src" target="_blank" x-text="getSourceName(src)"></a>
-                      <span x-show="i+1 < getSources(bulletin).length"> • </span>
+                      <span class="separator" x-show="i+1 < getSources(bulletin).length"> • </span>
                     </li>
                   </template>
                 </ul>
@@ -174,7 +196,7 @@
         <button
           x-show="currentBulletinsPage+1 < totalBulletinsPages"
           type="button"
-          class="mx-auto w-[250px] p-2 flex flex-row gap-2 items-center justify-center bg-white rounded-md border border-gray-400 text-blue-400 hover:cursor-pointer hover:bg-gray-100 hover:text-blue-500"
+          class="mx-auto w-full max-w-[250px] p-2 flex flex-row gap-2 items-center justify-center bg-white rounded-md border border-gray-400 text-blue-400 hover:cursor-pointer hover:bg-gray-100 hover:text-blue-500"
           @click="loadMore()"
         >
           <!-- arrow-path -->
@@ -241,6 +263,7 @@
         totalLatestBulletins: 0,
         totalBulletinsPages: 1,
         shownBulletins: {},
+        shownSources: {},
         loadingBulletins: false,
 
         // UI Helpers
@@ -292,6 +315,11 @@
 
         getSourceName(sourceUrl) {
           return sourceUrl.replace(/https?\:\/\/(www\.)*/, '');
+        },
+
+        getBulletinDate(bulletin) {
+          const tzB = parseInt(bulletin.created_at)*1000;
+          return new Date(tzB).toLocaleString();
         },
 
         resetVotes() {
