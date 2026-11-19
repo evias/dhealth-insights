@@ -143,6 +143,8 @@ router.post('/vote', async (req, res) => {
       bulletinID, userID, voteValue
     });
 
+    log.info('Vote registered successfully', {bulletinID, userID, voteValue});
+
     score = bulletin.upvotes - bulletin.downvotes;
     return res.status(200).json({
       success: true,

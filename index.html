@@ -314,7 +314,7 @@
         },
 
         getSourceName(sourceUrl) {
-          return sourceUrl.replace(/https?\:\/\/(www\.)*/, '');
+          return sourceUrl.replace(/https?\:\/\/(?:www\.)?([^\/?#]*).*$/, '$1');
         },
 
         getBulletinDate(bulletin) {

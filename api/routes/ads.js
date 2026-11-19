@@ -105,6 +105,8 @@ router.post('/click', async (req, res) => {
       id: ctaID,
     });
 
+    log.info('CTA click registered successfully', {id: ctaID});
+
     return res.status(200).json({
       success: true,
       num_clicks: cta_entry.num_clicks,

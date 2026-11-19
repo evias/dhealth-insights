@@ -79,6 +79,8 @@ router.post('/bulletins', async (req, res) => {
       trending: 0,
     });
 
+    log.info('New bulletin created successfully', {id});
+
     return res.status(200).json({
       success: true,
       id: bulletin.id,
@@ -146,6 +148,9 @@ router.post('/trending', async (req, res) => {
     const updated = insightsDb.updateTrending({
       id, trending
     });
+
+
+    log.info('Updated bulletin trending flag', {id, trending});
 
     return res.status(200).json({
       success: true,
@@ -219,6 +224,8 @@ router.post('/ads', async (req, res) => {
     const cta_entry = insightsDb.createCTAEntry({
       id, title, content, cta_text, cta_url,
     });
+
+    log.info('New CTA entry created successfully', {id});
 
     return res.status(200).json({
       success: true,
