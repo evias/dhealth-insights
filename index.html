@@ -133,7 +133,7 @@
               </div>
               <div class="flex flex-row items-start min-w-0">
                 <p class="min-w-0 break-words text-justify" x-text="bulletin.excerpt"></p>
-                <div class="ml-2 sm:mt-4">
+                <div class="ml-2 mt-6 sm:mt-4">
                   <button
                     type="button"
                     title="Read more"
@@ -177,12 +177,13 @@
                 </template>
               </div>
               <div class="meta">
-                <span class="src">sources: </span>
-                <ul class="flex flex-row flex-wrap gap-2 min-w-0">
+                <span class="src date" x-text="getBulletinDate(bulletin)"></span>
+                <span class="src hidden sm:inline">sources: </span>
+                <ul class="min-w-0 hidden sm:flex sm:flex-row sm:flex-wrap gap-2">
                   <template x-for="(src, i) in getSources(bulletin)" :key="src">
                     <li class="src">
                       <a :href="src" target="_blank" x-text="getSourceName(src)"></a>
-                      <span x-show="i+1 < getSources(bulletin).length"> • </span>
+                      <span class="separator" x-show="i+1 < getSources(bulletin).length"> • </span>
                     </li>
                   </template>
                 </ul>
@@ -262,6 +263,7 @@
         totalLatestBulletins: 0,
         totalBulletinsPages: 1,
         shownBulletins: {},
+        shownSources: {},
         loadingBulletins: false,
 
         // UI Helpers
@@ -313,6 +315,11 @@
 
         getSourceName(sourceUrl) {
           return sourceUrl.replace(/https?\:\/\/(www\.)*/, '');
+        },
+
+        getBulletinDate(bulletin) {
+          const tzB = parseInt(bulletin.created_at)*1000;
+          return new Date(tzB).toLocaleString();
         },
 
         resetVotes() {

@@ -114,7 +114,10 @@ button.btn.active{background:var(--steel);border-color:var(--steel);color:#fff}
 .meta:not(.cta-meta) .src{font-family:var(--mono);font-size:.68rem;color:var(--lock);margin-left:auto}
 @media (max-width:640px){
   .meta:not(.cta-meta) .src{margin-left:0;width:100%}
+  .meta:not(.cta-meta) .src.date{text-align:center}
   .meta ul{flex-wrap:wrap}
+  .meta{text-align:center}
+  .separator{display:none}
 }
 
 .meta a:link, .meta a:focus, .meta a:visited {font-family:var(--mono);font-size:.68rem;color:var(--lock)}

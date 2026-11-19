@@ -224,6 +224,12 @@
   .mx-auto {
     margin-inline: auto;
   }
+  .mt-4 {
+    margin-top: calc(var(--spacing) * 4);
+  }
+  .mt-6 {
+    margin-top: calc(var(--spacing) * 6);
+  }
   .-mr-0\.5 {
     margin-right: calc(var(--spacing) * -0.5);
   }
@@ -536,8 +542,14 @@
     .sm\:ml-auto {
       margin-left: auto;
     }
+    .sm\:flex {
+      display: flex;
+    }
     .sm\:hidden {
       display: none;
+    }
+    .sm\:inline {
+      display: inline;
     }
     .sm\:h-\[128px\] {
       height: 128px;
@@ -550,6 +562,9 @@
     }
     .sm\:flex-row {
       flex-direction: row;
+    }
+    .sm\:flex-wrap {
+      flex-wrap: wrap;
     }
     .sm\:items-end {
       align-items: flex-end;
@@ -935,8 +950,17 @@ button.btn.active {
     margin-left: 0;
     width: 100%;
   }
+  .meta:not(.cta-meta) .src.date {
+    text-align: center;
+  }
   .meta ul {
     flex-wrap: wrap;
+  }
+  .meta {
+    text-align: center;
+  }
+  .separator {
+    display: none;
   }
 }
 .meta a:link, .meta a:focus, .meta a:visited {
