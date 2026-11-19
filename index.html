@@ -13,7 +13,7 @@
   <link href="/assets/fonts/IBMPlex.css" rel="stylesheet">
 </head>
 <body x-data="insightsUI()">
-  <header class="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-8 sm:py-4">
+  <header class="flex flex-wrap items-center text-center gap-x-4 gap-y-2 px-4 py-3 sm:px-8 sm:py-4">
     <!-- logo-dhealth-insights -->
     <svg class="logo" viewBox="0 0 64 64" aria-label="dHealth Insights">
       <rect width="64" height="64" rx="12" fill="#FFFFFF"/>
@@ -29,11 +29,11 @@
       <div class="sub">DAILY INDUSTRY INSIGHTS</div>
     </div>
     <div class="date flex flex-wrap items-center gap-x-1 w-full sm:w-auto sm:ml-auto">
-      <span class="date" id="today"></span><span> • </span>
+      <span class="date" id="today"></span><span class="sm:hidden"> • </span>
       <span class="date" x-text="'User: ' + insightsUserID"></span>
       <span
         @click="changeUserID()"
-        class="date hover:cursor-pointer">
+        class="date inline hover:cursor-pointer">
         <!-- arrow-path -->
         <svg
           xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -46,12 +46,14 @@
   </header>
 
   <main>
-    <div class="toolbar flex-wrap">
-      <span class="tagline w-full sm:w-auto">// community-ranked bulletins &mdash; cast your vote</span>
-      <button class="btn" :class="{'active': sortedBy === 'hot'}" @click="sortBy('hot')">HOT</button>
-      <button class="btn" :class="{'active': sortedBy === 'new'}" @click="sortBy('new')">NEW</button>
-      <button class="btn" :class="{'active': sortedBy === 'top'}" @click="sortBy('top')">TOP</button>
-      <button class="btn" @click="resetVotes()">RESET MY VOTES</button>
+    <div class="toolbar flex-wrap sm:text-center">
+      <span class="tagline w-full sm:w-auto sm:text-xs sm:mb-2">// community-ranked bulletins &mdash; cast your vote</span>
+      <div class="mx-auto">
+        <button class="btn" :class="{'active': sortedBy === 'hot'}" @click="sortBy('hot')">HOT</button>
+        <button class="btn" :class="{'active': sortedBy === 'new'}" @click="sortBy('new')">NEW</button>
+        <button class="btn" :class="{'active': sortedBy === 'top'}" @click="sortBy('top')">TOP</button>
+        <button class="btn" @click="resetVotes()">RESET MY VOTES</button>
+      </div>
     </div>
     <div id="feed" class="min-h-screen">
       <template x-for="(bulletin, b_i) in sortedBulletins" :key="bulletin.id">
@@ -109,10 +111,29 @@
                 aria-label="Downvote">&#9660;</button>
             </div>
             <div class="w-full min-w-0 flex flex-col">
-              <h2 class="break-words" x-text="bulletin.title"></h2>
+              <div class="flex flex-row items-center mb-2">
+                <h2 class="break-words" x-text="bulletin.title"></h2>
+                <div class="vote-mobile">
+                  <button
+                    class="up"
+                    :class="{
+                      'active': knownUserVotes[bulletin.id] === 1
+                    }"
+                    @click="registerVote(bulletin.id, 1)"
+                    aria-label="Upvote">&#9650;</button>
+                  <span class="score" x-text="bulletinsScores[bulletin.id]"></span>
+                  <button
+                    class="down"
+                    :class="{
+                      'active': knownUserVotes[bulletin.id] === -1
+                    }"
+                    @click="registerVote(bulletin.id, -1)"
+                    aria-label="Downvote">&#9660;</button>
+                </div>
+              </div>
               <div class="flex flex-row items-start min-w-0">
-                <p class="min-w-0 break-words" x-text="bulletin.excerpt"></p>
-                <div class="ml-2">
+                <p class="min-w-0 break-words text-justify" x-text="bulletin.excerpt"></p>
+                <div class="ml-2 sm:mt-4">
                   <button
                     type="button"
                     title="Read more"

@@ -227,11 +227,17 @@
   .-mr-0\.5 {
     margin-right: calc(var(--spacing) * -0.5);
   }
+  .mb-2 {
+    margin-bottom: calc(var(--spacing) * 2);
+  }
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
   }
   .block {
     display: block;
+  }
+  .contents {
+    display: contents;
   }
   .flex {
     display: flex;
@@ -467,6 +473,9 @@
     --tw-blur: blur(8px);
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
   }
+  .filter {
+    filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
+  }
   .transition {
     transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
@@ -518,8 +527,17 @@
     outline-color: var(--color-teal-600);
   }
   @media (width >= 40rem) {
+    .sm\:mt-4 {
+      margin-top: calc(var(--spacing) * 4);
+    }
+    .sm\:mb-2 {
+      margin-bottom: calc(var(--spacing) * 2);
+    }
     .sm\:ml-auto {
       margin-left: auto;
+    }
+    .sm\:hidden {
+      display: none;
     }
     .sm\:h-\[128px\] {
       height: 128px;
@@ -557,12 +575,19 @@
     .sm\:py-4 {
       padding-block: calc(var(--spacing) * 4);
     }
+    .sm\:text-center {
+      text-align: center;
+    }
     .sm\:text-left {
       text-align: left;
     }
     .sm\:text-xl {
       font-size: var(--text-xl);
       line-height: var(--tw-leading, var(--text-xl--line-height));
+    }
+    .sm\:text-xs {
+      font-size: var(--text-xs);
+      line-height: var(--tw-leading, var(--text-xs--line-height));
     }
   }
 }
@@ -630,7 +655,6 @@ header .date {
 @media (max-width:640px) {
   header .date {
     margin-left: 0;
-    width: 100%;
   }
 }
 main {
@@ -639,6 +663,11 @@ main {
   padding: 2rem 1.25rem 4rem;
   min-width: 0;
   overflow-x: hidden;
+}
+@media (max-width:640px) {
+  main {
+    padding: 1rem 1.25rem 4rem;
+  }
 }
 .toolbar {
   display: flex;
@@ -652,6 +681,15 @@ main {
   color: var(--label);
   font-size: .78rem;
   margin-right: auto;
+}
+@media (max-width:640px) {
+  .tagline {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--label);
+    font-size: .72rem;
+    margin-right: auto;
+  }
 }
 button.btn {
   font-family: var(--mono);
@@ -739,6 +777,11 @@ button.btn.active {
   font-size: .68rem;
   color: var(--prem);
 }
+@media (max-width:640px) {
+  .meta.cta-meta {
+    margin-top: 2rem;
+  }
+}
 .bulletin {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -749,16 +792,6 @@ button.btn.active {
   gap: 1.1rem;
   transition: border-color .15s, box-shadow .15s;
   min-width: 0;
-}
-@media (max-width:640px) {
-  .bulletin {
-    flex-direction: column;
-  }
-  .vote {
-    flex-direction: row;
-    min-width: 0;
-    padding-top: 0;
-  }
 }
 .bulletin:hover {
   border-color: var(--line-strong);
@@ -771,6 +804,9 @@ button.btn.active {
   gap: .25rem;
   min-width: 42px;
   padding-top: .15rem;
+}
+.vote-mobile {
+  display: none;
 }
 .vote button {
   border: 1px solid var(--line-strong);
@@ -798,6 +834,50 @@ button.btn.active {
   background: var(--prem);
   border-color: var(--prem);
   color: #fff;
+}
+@media (max-width:640px) {
+  .bulletin {
+    flex-direction: column;
+    padding: 1rem .75rem;
+  }
+  .vote {
+    display: none;
+  }
+  .vote-mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .25rem;
+    min-width: 42px;
+    padding-top: .15rem;
+  }
+  .vote-mobile button {
+    border: 1px solid var(--line-strong);
+    background: var(--steel-tint);
+    color: var(--steel-dark);
+    width: 30px;
+    height: 28px;
+    border-radius: var(--radius);
+    font-size: .8rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .vote-mobile button:hover {
+    background: var(--steel);
+    color: #fff;
+    border-color: var(--steel);
+  }
+  .vote-mobile button.up.active {
+    background: var(--ok);
+    border-color: var(--ok);
+    color: #fff;
+  }
+  .vote-mobile button.down.active {
+    background: var(--prem);
+    border-color: var(--prem);
+    color: #fff;
+  }
 }
 .score {
   font-family: var(--mono);
