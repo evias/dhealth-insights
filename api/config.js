@@ -9,7 +9,12 @@ module.exports = {
   server: {
     buildType: process.env.APP_BUILD || 'development',
     bindHost: process.env.APP_BIND_HOST || 'localhost',
-    bindPort: parseInt(process.env.APP_BIND_PORT || '3000', 10)
+    bindPort: parseInt(process.env.APP_BIND_PORT || '3000', 10),
+  },
+
+  web: {
+    baseUrl: process.env.WEB_BASE_URL || 'http://localhost:3000',
+    domainName: process.env.WEB_BASE_URL.replace(/https?\:\/\/(?:www\.)?([^\/?#]*).*$/, '$1'),
   },
 
   api: {
@@ -18,6 +23,6 @@ module.exports = {
   },
 
   logging: {
-    logFile: process.env.APP_LOGS_FILE || 'application.log'
+    logFile: process.env.APP_LOGS_FILE || 'application.log',
   }
 };

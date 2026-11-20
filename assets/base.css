@@ -81,7 +81,7 @@ button.btn.active{background:var(--steel);border-color:var(--steel);color:#fff}
 }
 
 /* ===== Bulletin cards ===== */
-.bulletin{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+.bulletin{border:1px solid var(--line);border-radius:var(--radius);
   padding:1rem 1.25rem;margin-bottom:.75rem;display:flex;gap:1.1rem;transition:border-color .15s, box-shadow .15s;
   min-width:0}
 .bulletin:hover{border-color:var(--line-strong);box-shadow:0 2px 8px rgba(22,40,58,.07)}

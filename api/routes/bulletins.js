@@ -7,6 +7,73 @@ const router = express.Router();
 
 /**
  * @swagger
+ * /api/v1/bulletins/id:
+ *   get:
+ *     tags:
+ *       - Bulletins
+ *     summary: Get a bulletin by ID
+ *     description: Returns one bulletin by its ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: The bulletin ID.
+ *     responses:
+ *       200:
+ *         description: Bulletin retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 title:
+ *                   type: string
+ *                 slug:
+ *                   type: string
+ *                 excerpt:
+ *                   type: string
+ *                 content:
+ *                   type: string
+ *                 model:
+ *                   type: string
+ *                 upvotes:
+ *                   type: number
+ *                 downvotes:
+ *                   type: number
+ *                 sources:
+ *                   type: string
+ *                 trending:
+ *                   type: number
+ *                 created_at:
+ *                   type: number
+ *                 updated_at:
+ *                   type: number
+ *       400:
+ *         $ref: '#/components/schemas/Error'
+ *       500:
+ *         $ref: '#/components/schemas/Error'
+ */
+router.get('/id', async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    const bulletin = insightsDb.getBulletinByID(id);
+
+    return res.status(200).json({
+      ...bulletin
+    });
+  } catch (error) {
+    log.error('Error listing bulletins:', { error: error });
+    res.status(500).json({ error: 'Failed to list bulletins' });
+  }
+});
+
+/**
+ * @swagger
  * /api/v1/bulletins/list:
  *   get:
  *     tags:
@@ -55,10 +122,24 @@ const router = express.Router();
  *                         type: string
  *                       content:
  *                         type: string
+ *                       model:
+ *                         type: string
  *                       upvotes:
  *                         type: number
  *                       downvotes:
  *                         type: number
+ *                       sources:
+ *                         type: string
+ *                       trending:
+ *                         type: number
+ *                       created_at:
+ *                         type: number
+ *                       updated_at:
+ *                         type: number
+ *                       score:
+ *                         type: number
+ *                       tags:
+ *                         type: string
  *                 sort:
  *                   type: string
  *       400:

@@ -162,7 +162,7 @@ const insightsDb = {
   },
 
   // Get all bulletins with pagination
-  getAllBulletins(sortBy, limit = 10, offset = 0) {
+  getAllBulletins(sortBy, limit = 10, offset = 0, minTz = null) {
     let sort;
     switch(sortBy) {
     case 'new':
@@ -174,6 +174,11 @@ const insightsDb = {
     default:
     case 'hot':
       sort = `trending DESC, score DESC`;
+    }
+
+    let conditions = ``;
+    if (minTz !== null && parseInt(minTz)) {
+      conditions += `WHERE created_at > ${parseInt(minTz)}`;
     }
 
     const stmt = db.prepare(`
@@ -188,6 +193,7 @@ const insightsDb = {
       LEFT JOIN tags t ON (
         t.id = bt_rel.tag_id
       )
+      ${conditions}
       GROUP BY bulletins.id
       ORDER BY ${sort}
       LIMIT ?

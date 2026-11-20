@@ -2,8 +2,8 @@ const crypto = require('crypto');
 require('./config');
 
 const KEY = crypto.scryptSync(
-    process.env.APP_CRYPTO_SECRET,
-    process.env.APP_CRYPTO_SALT, 32);
+  process.env.APP_CRYPTO_SECRET,
+  process.env.APP_CRYPTO_SALT, 32);
 
 function sha256(input) {
   return crypto.createHash('sha256').update(input, 'utf8').digest('hex');

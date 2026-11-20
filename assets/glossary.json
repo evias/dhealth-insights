@@ -1,17 +1,26 @@
 {
+  "AI credits": "monthly usage allotments that track how much you use AI-powered features in apps.",
   "AI data infrastructure": "the hardware and software needed to create, deploy, and manage AI applications and workloads.",
+  "AI-driven": "the act of harnessing artificial intelligence across every functional area for competitive advantage.",
+  "AI integration": "the process of adding AI models and algorithms into existing systems.",
   "AI-native": "refers to systems designed with AI as a core component. AI is embedded end-to-end in architecture.",
-  "Amazon Web Services": "Amazon Web Services, Inc. is a subsidiary of Amazon that provides on-demand cloud computing platforms",
-
-  "CMS": "Centers for Medicare & Medicaid Services",
-
-  "dHealth Intelligence": "Intelligent and Trusted Healthcare with AI and Blockchain Technology",
-  "digital health": "a discipline that includes digital care programs, technologies with health, healthcare, to enhance the efficiency of healthcare delivery",
-
-  "Gemini": "Google's AI assistant",
+  "Amazon Web Services": "Amazon Web Services, Inc. is a subsidiary of Amazon that provides on-demand cloud computing platforms.",
+  "API": "An application programming interface is a connection between computers or between computer programs.",
+  "CMS": "Centers for Medicare & Medicaid Services.",
+  "dHealth Intelligence": "Intelligent and Trusted Healthcare with AI and Blockchain Technology.",
+  "digital health": "a discipline that includes digital care programs, technologies with health, healthcare, to enhance the efficiency of healthcare delivery.",
+  "FDA": "The FDA is responsible for protecting the public health by ensuring the safety, efficacy, and security of human and veterinary drugs, biological products, and medical devices.",
+  "Gemini": "Gemini is Google's AI assistant.",
   "GLP-1": "GLP-1 is a hormone that regulates blood sugar levels and has other effects on the gut and brain.",
+  "Healthcare": "the organized provision of medical services, prevention, diagnosis, and treatment of illness.",
+  "healthcare": "the organized provision of medical services, prevention, diagnosis, and treatment of illness.",
+  "interoperability": "The capability of a product or system to interact and function with others.",
+  "Medicare": "a health insurance program for people age 65 or older and younger people with disabilities.",
+  "Nvidia": "an American multinational technology company headquartered in Santa Clara, California. The company develops graphics processing units.",
+  "ONC": "a staff division of the Office of the Secretary, within the U.S. Department of Health and Human Services. ONC leads national health IT efforts.",
+  "OpenAI": "an American artificial intelligence public benefit corporation headquartered in San Francisco, California. Its release of ChatGPT in November 2022 accelerated an AI boom.",
 
-  "Healthcare": "the organized provision of medical services, prevention, diagnosis, and treatment of illness",
-
-  "ONC": "a staff division of the Office of the Secretary, within the U.S. Department of Health and Human Services. ONC leads national health IT efforts."
+  "health AI": "https://dhealth.com/ai-agent",
+  "Roche": "https://www.roche.com",
+  "Sanofi": "https://www.sanofi.com"
 }

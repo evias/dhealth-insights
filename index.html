@@ -131,7 +131,13 @@
               </div>
             </div>
           </article>
-          <article class="bulletin">
+          <article
+            class="bulletin"
+            :class="{
+              'bg-(--panel)': !highlightedBulletin || highlightedBulletin.id !== bulletin.id,
+              'bg-sky-100': !!highlightedBulletin && highlightedBulletin.id === bulletin.id
+            }"
+          >
             <div class="vote">
               <button
                 class="up"
@@ -455,7 +461,14 @@
           // Walk text nodes only — don't touch existing tags/attributes
           const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
           const targets = [];
-          while (walker.nextNode()) targets.push(walker.currentNode);
+          while (walker.nextNode()) {
+            const cls = walker.currentNode.parentElement?.className ?? "";
+            if (cls.length && cls.includes("chip")) continue; // don't touch tags
+            else if (walker.currentNode.parentElement?.tagName === 'A') continue; // don't touch links
+            else if (walker.currentNode.parentElement?.tagName === 'BUTTON') continue; // don't touch buttons
+
+            targets.push(walker.currentNode);
+          }
 
           targets.forEach(node => {
             if (!pattern.test(node.nodeValue)) return;
@@ -464,6 +477,7 @@
             const frag = document.createDocumentFragment();
             let last = 0;
             for (const m of node.nodeValue.matchAll(pattern)) {
+              if (!m.length || !m[0].length) continue;
               frag.append(document.createTextNode(node.nodeValue.slice(last, m.index)));
               frag.append(this.buildTerm(m[0]));
               last = m.index + m[0].length;
@@ -480,9 +494,22 @@
           span.textContent = word;
           const tip = document.createElement('span');
           tip.className = 'tooltip';
-          tip.textContent = this.terms[word];
+
+          const c = this.terms[word];
+          const m = c.match(/^https?:\/\//);
+          if (m !== null) {
+            // tooltip content is a link (to sponsor).
+            tip.innerHTML = `<a href="${c}" target="_blank">Sponsored link: ${this.getLinkLabel(c)}</a>`;
+          } else {
+            // tooltip content is simple text.
+            tip.textContent = this.terms[word];
+          }
           span.append(tip);
           return span;
+        },
+
+        getLinkLabel(sourceUrl) {
+          return sourceUrl.replace(/https?\:\/\/(?:www\.)?([^\/?#]*).*$/, '$1');
         }
       }));
     });
@@ -520,6 +547,7 @@
         loadingBulletins: false,
         isSubscribing: false,
         subscribersCount: 0,
+        highlightedPost: null,
 
         // UI Helpers
 
@@ -534,6 +562,20 @@
           await this.loadSubscribersCount();
 
           this.knownUserVotes = JSON.parse(localStorage.getItem(this.STORAGE_KEY)||'{}'); // {id: 1|-1}
+
+          // do we have a bulletin ID in the URL?
+          const params = new URLSearchParams(window.location.search);
+          const post = params.get('post');
+          const unsub = params.get('unsubscribe');
+
+          // regexp to reduce xss attack vectors.
+          if (!!post && !!post.length && /^[a-z0-9-_]{1,64}$/i.test(post)) {
+            this.highlightedPost = await this.loadBulletinByID(post);
+          }
+
+          if (!!unsub && parseInt(unsub) === 1) {
+            this.showUnsubscribe = true;
+          }
         },
 
         paginate(p) {
@@ -593,6 +635,10 @@
 
         get sortedBulletins() {
           return this.latestBulletins;
+        },
+
+        get highlightedBulletin() {
+          return this.highlightedPost;
         },
 
         async loadMore() {
@@ -657,6 +703,18 @@
           if (response.ok) {
             const data = await response.json();
             Alpine.store('feed_state').glossaryEntries = data;
+          }
+        },
+
+        async loadBulletinByID(id) {
+          try {
+            const response = await fetch(`/api/v1/bulletins/id?id=${id}`)
+            if (response.ok) {
+              const data = await response.json();
+              return data;
+            }
+          } catch (error) {
+            log.error('Error loading bulletin', { error: error.message });
           }
         },
 
