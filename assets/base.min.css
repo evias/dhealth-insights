@@ -455,20 +455,11 @@
   .bg-sky-600 {
     background-color: var(--color-sky-600);
   }
-  .bg-teal-100 {
-    background-color: var(--color-teal-100);
-  }
   .bg-teal-600 {
     background-color: var(--color-teal-600);
   }
   .bg-white {
     background-color: var(--color-white);
-  }
-  .bg-yellow-100 {
-    background-color: var(--color-yellow-100);
-  }
-  .bg-yellow-300 {
-    background-color: var(--color-yellow-300);
   }
   .p-2 {
     padding: calc(var(--spacing) * 2);
