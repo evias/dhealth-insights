@@ -45,7 +45,7 @@
     </div>
   </header>
 
-  <main>
+  <main x-data="glossary" x-init="annotate()" x-cloak>
     <div class="toolbar flex-wrap sm:text-center">
       <span class="tagline w-full sm:w-auto sm:text-xs sm:mb-2">// community-ranked bulletins &mdash; cast your vote</span>
       <div class="mx-auto">
@@ -55,7 +55,10 @@
         <button class="btn" @click="resetVotes()">RESET MY VOTES</button>
       </div>
     </div>
-    <div id="feed" class="min-h-screen">
+    <div
+      x-ref="content"
+      id="feed"
+      class="min-h-screen">
       <template x-for="(bulletin, b_i) in sortedBulletins" :key="bulletin.id">
         <div>
           <!-- ads CTA (cta_entries) -->
@@ -201,11 +204,13 @@
                   </button>
                 </div>
               </div>
-              <div x-html="getBulletinHTML(bulletin)"
-                  class="text-sm py-2 text-justify"
-                  :class="{
-                    'hidden': !shownBulletins[bulletin.id]
-                  }"></div>
+              <div 
+                x-html="getBulletinHTML(bulletin)"
+                class="text-sm py-2 text-justify"
+                :class="{
+                  'hidden': !shownBulletins[bulletin.id]
+                }"
+              ></div>
               <div class="meta">
                 <template x-for="(tag, t_i) in (bulletin.tags || '').split(',').map(t => t.trim()).filter(Boolean)" :key="b_i + '-' + t_i">
                   <span
@@ -411,6 +416,79 @@
   </footer>
 
   <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.store('feed_state', {
+        glossaryEntries: {},
+        latestBulletins: [],
+        loaded: false,
+      });
+
+      Alpine.data('glossary', () => ({
+        terms: {},
+
+        async init() {
+          this.$watch('$store.feed_state.loaded', (loaded) => {
+            if (loaded) this.$nextTick(() => {
+              this.terms = this.$store.feed_state.glossaryEntries;
+              this.annotate();
+            })
+          });
+          // also handle the case where data arrived before glossary initialized
+          if (this.$store.feed_state.loaded) this.$nextTick(() => {
+            this.terms = this.$store.feed_state.glossaryEntries;
+            this.annotate();
+          });
+        },
+
+        annotate() {
+          const root = this.$refs.content;
+
+          // Build one regex from all terms, longest first (so "Merkle tree" wins over "tree")
+          const pattern = new RegExp(
+            '(' + Object.keys(this.terms)
+              .sort((a, b) => b.length - a.length)
+              .map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+              .join('|') + ')',
+            'g'
+          );
+
+          // Walk text nodes only — don't touch existing tags/attributes
+          const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+          const targets = [];
+          while (walker.nextNode()) targets.push(walker.currentNode);
+
+          targets.forEach(node => {
+            if (!pattern.test(node.nodeValue)) return;
+            pattern.lastIndex = 0;
+
+            const frag = document.createDocumentFragment();
+            let last = 0;
+            for (const m of node.nodeValue.matchAll(pattern)) {
+              frag.append(document.createTextNode(node.nodeValue.slice(last, m.index)));
+              frag.append(this.buildTerm(m[0]));
+              last = m.index + m[0].length;
+            }
+            frag.append(document.createTextNode(node.nodeValue.slice(last)));
+            node.replaceWith(frag);
+          });
+        },
+
+        buildTerm(word) {
+          const span = document.createElement('span');
+          span.className = 'glossary-term';
+          span.tabIndex = 0; // keyboard accessible
+          span.textContent = word;
+          const tip = document.createElement('span');
+          tip.className = 'tooltip';
+          tip.textContent = this.terms[word];
+          span.append(tip);
+          return span;
+        }
+      }));
+    });
+  </script>
+
+  <script>
     function insightsUI() {
       const log = window.createLogger("ui/main");
       return {
@@ -450,6 +528,7 @@
           localStorage.setItem(this.PROFILE_KEY, this.insightsUserID);
 
           await this.loadSystemInfo();
+          await this.loadGlossary();
           await this.loadCTAEntries();
           await this.loadLatestBulletins(1);
           await this.loadSubscribersCount();
@@ -573,6 +652,14 @@
           this.showLicense = true;
         },
 
+        async loadGlossary() {
+          const response = await fetch(`/assets/glossary.json`);
+          if (response.ok) {
+            const data = await response.json();
+            Alpine.store('feed_state').glossaryEntries = data;
+          }
+        },
+
         async loadLatestBulletins(p, s = 'hot', a = false) {
           this.loadingBulletins = true;
           try {
@@ -593,6 +680,9 @@
                 // SET mode ("view page x")
                 this.latestBulletins = data.bulletins;
               }
+
+              Alpine.store('feed_state').latestBulletins = this.latestBulletins;
+              Alpine.store('feed_state').loaded = true;
 
               this.currentBulletinsPage = data.page;
               this.totalLatestBulletins = data.total;
