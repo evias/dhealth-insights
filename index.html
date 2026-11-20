@@ -4,13 +4,57 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Daily Industry Insights — dHealth Intelligence</title>
+  <link rel="canonical" href="https://insights.dhealth.com/">
+  <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#16283A">
+  <meta name="description" content="Daily industry insights for healthcare professionals: regulation shifts, research breakthroughs and clinical practice updates — curated and community-ranked, and powered by dHealth Intelligence.">
+  <meta name="keywords" content="healthcare insights, digital health news, health regulation, clinical research, prevention, healthtech, medical industry, dHealth">
+  <meta name="author" content="dHealth Intelligence">
+
   <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="apple-touch-icon" href="/assets/logo-dhealth-insights.png">
+
   <link href="/assets/base.min.css" rel="stylesheet">
   <script defer src="/assets/alpinejs.min.js"></script>
   <script src="/assets/logger.js"></script>
   <script defer src="/assets/marked.min.js"></script>
   <link href="/assets/fonts/IBMPlex.css" rel="stylesheet">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="dHealth Insights — Your Healthcare Insights">
+  <meta property="og:title" content="dHealth Insights — Your Healthcare Insights">
+  <meta property="og:description" content="Community-ranked daily bulletins on health regulation, research and clinical practice — curated for healthcare professionals.">
+  <meta property="og:url" content="https://insights.dhealth.com/">
+  <meta property="og:image" content="https://insights.dhealth.com/assets/cover-dhealth-insights.png">
+  <meta property="og:image:width" content="741">
+  <meta property="og:image:height" content="296">
+  <meta property="og:locale" content="en_US">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="dHealth Insights — Your Healthcare Insights">
+  <meta name="twitter:description" content="Community-ranked daily bulletins on health regulation, research and clinical practice — curated for healthcare professionals.">
+  <meta name="twitter:image" content="https://insights.dhealth.com/assets/cover-dhealth-insights.png">
+
+  <!-- Structured data: WebSite + SearchAction -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "dHealth Insights — Your Healthcare Insights",
+    "url": "https://insights.dhealth.com/",
+    "description": "Daily community-ranked bulletins on health regulation, research and clinical practice for healthcare professionals.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "dHealth Intelligence",
+      "url": "https://dhealth.com"
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://insights.dhealth.com/?term={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
 </head>
 <body x-data="insightsUI()">
   <header class="flex flex-wrap items-center text-center gap-x-4 gap-y-2 px-4 py-3 sm:px-8 sm:py-4">
@@ -548,6 +592,7 @@
         isSubscribing: false,
         subscribersCount: 0,
         highlightedPost: null,
+        searchTerm: '',
 
         // UI Helpers
 
@@ -567,6 +612,7 @@
           const params = new URLSearchParams(window.location.search);
           const post = params.get('post');
           const unsub = params.get('unsubscribe');
+          const term = params.get('term');
 
           // regexp to reduce xss attack vectors.
           if (!!post && !!post.length && /^[a-z0-9-_]{1,64}$/i.test(post)) {
@@ -576,6 +622,12 @@
           if (!!unsub && parseInt(unsub) === 1) {
             this.showUnsubscribe = true;
           }
+
+          if (!!term && term.length && /^[a-z0-9-_%]{1,64}$/i.test(term)) {
+            this.searchTerm = term;
+          }
+
+          // TODO: highlight searchTerm
         },
 
         paginate(p) {

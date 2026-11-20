@@ -226,6 +226,11 @@ router.post('/vote', async (req, res) => {
 
     log.info('Vote registered successfully', {bulletinID, userID, voteValue});
 
+    // NOTE: the score is computed by substracting the number of downvotes from
+    // the number of upvotes, this notably implies that a *vote change* always
+    // adds or removes 2 from the actual score, e.g.: before `-1` vote comes in
+    // the bulletin has 3 upvotes and 0 downvotes, thus `3 - 0 = 3` ; when the
+    // vote is counted, there will be 2 upvotes and 1 downvote, i.e. `2 - 1 = 1`.
     score = bulletin.upvotes - bulletin.downvotes;
     return res.status(200).json({
       success: true,

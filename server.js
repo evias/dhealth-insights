@@ -18,6 +18,16 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Serve SEO/Crawler files
+app.get('/robots.txt', (req, res) => {
+  res.set('Cache-Control', 'public, max-age=86400'); // 1 day
+  res.sendFile(path.join(__dirname, 'robots.txt'));
+});
+app.get('/sitemap.xml', (req, res) => {
+  res.set('Cache-Control', 'public, max-age=86400'); // 1 day
+  res.sendFile(path.join(__dirname, 'sitemap.xml'));
+});
+
 // Logs API routes
 const logsApi = require('./api/routes/logs');
 app.use('/api/v1/logs', logsApi);
@@ -50,6 +60,15 @@ protected.use('/', writerApi);
 // END GROUP: protected write operations
 
 app.use('/api/v1/writer', protected);
+
+// catch-all, kthxbye.
+//
+// NOTE: currently using express@v4.x which allows bare wildcards. When
+// upgrading to express@v5.x, the wilcard must be named: e.g.:
+// app.get('*wildcard', (req,res) => {})
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 app.listen(bindPort, bindHost, async () => {
   log.info(`Server started in ${buildType} mode`);
