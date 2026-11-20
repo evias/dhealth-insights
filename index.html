@@ -418,22 +418,26 @@
   <script>
     document.addEventListener('alpine:init', () => {
       Alpine.store('feed_state', {
+        glossaryEntries: {},
         latestBulletins: [],
         loaded: false,
       });
 
       Alpine.data('glossary', () => ({
-        terms: {
-          "Healthcare": "just a test",
-          "healthcare": "another test",
-        },
+        terms: {},
 
-        init() {
+        async init() {
           this.$watch('$store.feed_state.loaded', (loaded) => {
-            if (loaded) this.$nextTick(() => this.annotate())
-          })
+            if (loaded) this.$nextTick(() => {
+              this.terms = this.$store.feed_state.glossaryEntries;
+              this.annotate();
+            })
+          });
           // also handle the case where data arrived before glossary initialized
-          if (this.$store.feed_state.loaded) this.$nextTick(() => this.annotate())
+          if (this.$store.feed_state.loaded) this.$nextTick(() => {
+            this.terms = this.$store.feed_state.glossaryEntries;
+            this.annotate();
+          });
         },
 
         annotate() {
@@ -524,6 +528,7 @@
           localStorage.setItem(this.PROFILE_KEY, this.insightsUserID);
 
           await this.loadSystemInfo();
+          await this.loadGlossary();
           await this.loadCTAEntries();
           await this.loadLatestBulletins(1);
           await this.loadSubscribersCount();
@@ -645,6 +650,14 @@
           // Parse markdown to HTML using marked
           this.licenseMarkdown = marked.parse(markdown);
           this.showLicense = true;
+        },
+
+        async loadGlossary() {
+          const response = await fetch(`/assets/glossary.json`);
+          if (response.ok) {
+            const data = await response.json();
+            Alpine.store('feed_state').glossaryEntries = data;
+          }
         },
 
         async loadLatestBulletins(p, s = 'hot', a = false) {
